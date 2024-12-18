@@ -107,7 +107,20 @@ function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw();
   bulletsArray.forEach((eachBullet) => eachBullet.update());
-  enemiesArray.forEach((enemy) => enemy.update());
+  enemiesArray.forEach((enemy, eIndex) => {
+    enemy.update();
+
+    bulletsArray.forEach((bullet, bIndex) => {
+      let dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
+
+      if (dist - enemy.radius - bullet.radius < 1) {
+        setTimeout(() => {
+          enemiesArray.splice(eIndex, 1);
+          bulletsArray.splice(bIndex, 1);
+        }, 0);
+      }
+    });
+  });
 }
 
 // making bullets on click
