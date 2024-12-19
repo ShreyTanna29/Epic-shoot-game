@@ -124,9 +124,7 @@ function animate() {
         bullet.y + bullet.radius < 0 ||
         bullet.y - bullet.radius > canvas.height
       ) {
-        setTimeout(() => {
-          bulletsArray.splice(bIndex, 1);
-        }, 0);
+        bulletsArray.splice(bIndex, 1);
       }
 
       //removing enemy when bullet hits it
