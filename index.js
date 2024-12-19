@@ -42,8 +42,8 @@ class Bullet {
 
   update() {
     this.draw();
-    this.x += this.velocity.x * 10;
-    this.y += this.velocity.y * 10;
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
   }
 }
 
@@ -65,13 +65,13 @@ class Enemy {
 
   update() {
     this.draw();
-    this.x += this.velocity.x * 5;
-    this.y += this.velocity.y * 5;
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
   }
 }
 
 // invoking player class
-const player = new Player(canvas.width / 2, canvas.height / 2, 20, "red");
+const player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 player.draw();
 
 //generating enemies
@@ -88,12 +88,13 @@ function spawnEnemies() {
       y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
     }
 
-    let color = "green";
+    // creating enemies
+    let color = `hsl(${Math.random() * 360},50%,50%)`;
     let angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
 
     let velocity = {
-      x: Math.cos(angle),
-      y: Math.sin(angle),
+      x: Math.cos(angle) * 2,
+      y: Math.sin(angle) * 2,
     };
 
     enemiesArray.push(new Enemy(x, y, radius, color, velocity));
@@ -104,10 +105,9 @@ spawnEnemies();
 //animating
 let animationId;
 function animate() {
-  console.log(bulletsArray);
-
   animationId = requestAnimationFrame(animate);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(0,0,0,0.1)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   bulletsArray.forEach((eachBullet) => eachBullet.update());
 
@@ -120,7 +120,7 @@ function animate() {
       //removing bullets when they go off screen
       if (
         bullet.x + bullet.radius < 0 ||
-        bullet.x + bullet.radius > canvas.width ||
+        bullet.x - bullet.radius > canvas.width ||
         bullet.y + bullet.radius < 0 ||
         bullet.y - bullet.radius > canvas.height
       ) {
@@ -157,12 +157,12 @@ addEventListener("click", (event) => {
   );
 
   const velocity = {
-    x: Math.cos(angle),
-    y: Math.sin(angle),
+    x: Math.cos(angle) * 6,
+    y: Math.sin(angle) * 6,
   };
 
   bulletsArray.push(
-    new Bullet(canvas.width / 2, canvas.height / 2, 5, "pink", velocity)
+    new Bullet(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
   );
 });
 
