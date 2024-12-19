@@ -102,17 +102,29 @@ function spawnEnemies() {
 
 spawnEnemies();
 //animating
+let animationId;
 function animate() {
-  requestAnimationFrame(animate);
+  console.log(bulletsArray);
+
+  animationId = requestAnimationFrame(animate);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw();
   bulletsArray.forEach((eachBullet) => eachBullet.update());
+
   enemiesArray.forEach((enemy, eIndex) => {
     enemy.update();
 
     bulletsArray.forEach((bullet, bIndex) => {
       let dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
 
+      //removing bullets when they go off screen
+      if (bullet.x - bullet.radius < 0) {
+        setTimeout(() => {
+          bulletsArray.splice(bIndex, 1);
+        }, 0);
+      }
+
+      //removing enemy when bullet hits it
       if (dist - enemy.radius - bullet.radius < 1) {
         setTimeout(() => {
           enemiesArray.splice(eIndex, 1);
@@ -120,6 +132,15 @@ function animate() {
         }, 0);
       }
     });
+
+    // if enemy hits a player game ends
+    const distFromPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+
+    if (distFromPlayer - enemy.radius - player.radius < 1) {
+      setTimeout(() => {
+        cancelAnimationFrame(animationId);
+      }, 0);
+    }
   });
 }
 
