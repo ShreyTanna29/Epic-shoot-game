@@ -131,10 +131,17 @@ function animate() {
 
       //removing enemy when bullet hits it
       if (dist - enemy.radius - bullet.radius < 1) {
-        setTimeout(() => {
-          enemiesArray.splice(eIndex, 1);
-          bulletsArray.splice(bIndex, 1);
-        }, 0);
+        if (enemy.radius - 10 > 10) {
+          setTimeout(() => {
+            enemy.radius -= 10;
+            bulletsArray.splice(bIndex, 1);
+          }, 0);
+        } else {
+          setTimeout(() => {
+            enemiesArray.splice(eIndex, 1);
+            bulletsArray.splice(bIndex, 1);
+          }, 0);
+        }
       }
     });
 
