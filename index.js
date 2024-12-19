@@ -131,9 +131,11 @@ function animate() {
 
       //removing enemy when bullet hits it
       if (dist - enemy.radius - bullet.radius < 1) {
-        if (enemy.radius - 10 > 10) {
+        if (enemy.radius - 15 > 10) {
           setTimeout(() => {
-            enemy.radius -= 10;
+            gsap.to(enemy, {
+              radius: enemy.radius - 15,
+            });
             bulletsArray.splice(bIndex, 1);
           }, 0);
         } else {
