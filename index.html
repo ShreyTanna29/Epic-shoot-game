@@ -7,25 +7,33 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Shooter Game</title>
   </head>
-  <body>
+  <body class="bg-black">
+    <!-- top score bar -->
     <div class="fixed text-white text-sm select-none m-2">
       <span>Score: </span>
       <span id="scoreElement">0</span>
     </div>
-    <div class="fixed inset-0 flex items-center justify-center">
+
+    <!-- score modal -->
+    <div
+      class="fixed inset-0 flex items-center justify-center select-none"
+      id="gameModal"
+    >
       <div
         class="backdrop-blur-md text-white bg-white/10 max-w-md w-full p-12 rounded-lg text-center"
       >
-        <h1 class="text-7xl leading-none">0</h1>
+        <h1 class="text-7xl leading-none" id="endScore">0</h1>
         <p class="mb-4 text-sm text-gray-300">Points</p>
         <div>
-          <button class="w-full rounded-full bg-black/50 p-3">
+          <button class="w-full rounded-full bg-black/50 p-3" id="startBtn">
             Start Game
           </button>
         </div>
       </div>
     </div>
+
     <canvas id="canvas"></canvas>
+
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
       integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="

@@ -1,15 +1,35 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const scoreElement = document.getElementById("scoreElement");
+const gameModal = document.getElementById("gameModal");
+const startBtn = document.getElementById("startBtn");
+const endScore = document.getElementById("endScore");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-const bulletsArray = [];
-const enemiesArray = [];
-const particlesArray = [];
+let bulletsArray = [];
+let enemiesArray = [];
+let particlesArray = [];
+let spawnEnemyIntervalId;
 
-//classes
+//all functions
+function init() {
+  bulletsArray = [];
+  enemiesArray = [];
+  particlesArray = [];
+  scoreElement.innerHTML = 0;
+  clearInterval(spawnEnemyIntervalId);
+}
+
+function endGame() {
+  cancelAnimationFrame(animationId);
+  gameModal.style.display = "flex";
+  endScore.innerHTML = score;
+  score = 0;
+}
+
+//all classes
 class Player {
   constructor(x, y, radius, color) {
     this.x = x;
@@ -109,7 +129,7 @@ player.draw();
 
 //generating enemies
 function spawnEnemies() {
-  setInterval(() => {
+  spawnEnemyIntervalId = setInterval(() => {
     let radius = Math.random() * (50 - 10) + 10;
     let x;
     let y;
@@ -133,8 +153,6 @@ function spawnEnemies() {
     enemiesArray.push(new Enemy(x, y, radius, color, velocity));
   }, 1000);
 }
-
-spawnEnemies();
 
 //animating
 let animationId;
@@ -200,12 +218,12 @@ function animate() {
       }
     });
 
-    // if enemy hits a player game ends
+    //end game
     const distFromPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
 
     if (distFromPlayer - enemy.radius - player.radius < 1) {
       setTimeout(() => {
-        cancelAnimationFrame(animationId);
+        endGame();
       }, 0);
     }
   });
@@ -228,4 +246,10 @@ addEventListener("click", (event) => {
   );
 });
 
-animate();
+// start game
+startBtn.addEventListener("click", () => {
+  init();
+  animate();
+  spawnEnemies();
+  gameModal.style.display = "none";
+});
