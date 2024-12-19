@@ -118,7 +118,12 @@ function animate() {
       let dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
 
       //removing bullets when they go off screen
-      if (bullet.x - bullet.radius < 0) {
+      if (
+        bullet.x + bullet.radius < 0 ||
+        bullet.x + bullet.radius > canvas.width ||
+        bullet.y + bullet.radius < 0 ||
+        bullet.y - bullet.radius > canvas.height
+      ) {
         setTimeout(() => {
           bulletsArray.splice(bIndex, 1);
         }, 0);
