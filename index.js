@@ -6,6 +6,7 @@ canvas.height = innerHeight;
 
 const bulletsArray = [];
 const enemiesArray = [];
+const particlesArray = [];
 
 //classes
 class Player {
@@ -70,6 +71,37 @@ class Enemy {
   }
 }
 
+class Particle {
+  constructor(x, y, radius, color, velocity) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.velocity = velocity;
+    this.opacity = 1;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  update() {
+    this.draw();
+    //adding friction so particels. so particles are slowed down.
+    this.velocity.x *= 0.99;
+    this.velocity.y *= 0.99;
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+    this.opacity -= 0.01;
+  }
+}
+
 // invoking player class
 const player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 player.draw();
@@ -110,6 +142,13 @@ function animate() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   bulletsArray.forEach((eachBullet) => eachBullet.update());
+  particlesArray.forEach((particle, index) => {
+    if (particle.opacity <= 0) {
+      particlesArray.splice(index, 1);
+    } else {
+      particle.update();
+    }
+  });
 
   enemiesArray.forEach((enemy, eIndex) => {
     enemy.update();
@@ -129,6 +168,16 @@ function animate() {
 
       //removing enemy when bullet hits it
       if (dist - enemy.radius - bullet.radius < 1) {
+        //creating particles/explosions on hit
+        for (let i = 0; i < enemy.radius * 1.5; i++) {
+          particlesArray.push(
+            new Particle(bullet.x, bullet.y, Math.random() * 2, enemy.color, {
+              x: (Math.random() - 0.5) * (Math.random() * 8),
+              y: (Math.random() - 0.5) * (Math.random() * 8),
+            })
+          );
+        }
+        // shirinking and removing enemy on hit
         if (enemy.radius - 15 > 10) {
           setTimeout(() => {
             gsap.to(enemy, {
