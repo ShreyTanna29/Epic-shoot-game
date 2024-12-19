@@ -1,5 +1,6 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const scoreElement = document.getElementById("scoreElement");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -134,8 +135,10 @@ function spawnEnemies() {
 }
 
 spawnEnemies();
+
 //animating
 let animationId;
+let score = 0;
 function animate() {
   animationId = requestAnimationFrame(animate);
   ctx.fillStyle = "rgba(0,0,0,0.1)";
@@ -168,6 +171,8 @@ function animate() {
 
       //removing enemy when bullet hits it
       if (dist - enemy.radius - bullet.radius < 1) {
+        score += 5;
+        scoreElement.innerHTML = score;
         //creating particles/explosions on hit
         for (let i = 0; i < enemy.radius * 1.5; i++) {
           particlesArray.push(
@@ -177,6 +182,7 @@ function animate() {
             })
           );
         }
+
         // shirinking and removing enemy on hit
         if (enemy.radius - 15 > 10) {
           setTimeout(() => {

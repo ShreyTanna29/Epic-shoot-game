@@ -4,10 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Shooter Game</title>
   </head>
   <body>
+    <div class="fixed text-white text-sm select-none m-2">
+      <span>Score: </span>
+      <span id="scoreElement">0</span>
+    </div>
     <canvas id="canvas"></canvas>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
