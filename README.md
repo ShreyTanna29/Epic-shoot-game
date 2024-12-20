@@ -28,5 +28,5 @@ Don't forget to star the repo ⭐
 
 # Play it
 
-"GO and play this game right now, it's an order" - Kim Jong Un, after realising that you haven't played this game yet.
+"GO and play this game right now, it's an order" - Kim Jong Un, after realising that you haven't played this game yet. <br>
 https://epic-shoot-game.vercel.app
