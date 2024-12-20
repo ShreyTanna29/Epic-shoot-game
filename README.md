@@ -25,3 +25,8 @@ It's a fun game and a fun readme, so just take a chill pill.
 Made with love ❤️ by Shrey Tanna
 
 Don't forget to star the repo ⭐ 
+
+# Play it
+
+"GO and play this game right now, it's an order" - Kim Jong Un, after realising that you haven't played this game yet.
+https://epic-shoot-game.vercel.app
