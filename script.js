@@ -45,7 +45,7 @@ function spawnEnemies() {
 
     // creating enemies
     let color = `hsl(${Math.random() * 360},50%,50%)`;
-    let angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
+    let angle = Math.atan2(innerHeight / 2 - y, innerWidth / 2 - x);
 
     let velocity = {
       x: Math.cos(angle) * 2,
@@ -163,6 +163,7 @@ function animate() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   bulletsArray.forEach((eachBullet) => eachBullet.update());
+
   particlesArray.forEach((particle, index) => {
     if (particle.opacity <= 0) {
       particlesArray.splice(index, 1);
@@ -171,13 +172,15 @@ function animate() {
     }
   });
 
-  enemiesArray.forEach((enemy, eIndex) => {
+  for (let eIndex = enemiesArray.length - 1; eIndex >= 0; eIndex--) {
+    const enemy = enemiesArray[eIndex];
     enemy.update();
 
-    bulletsArray.forEach((bullet, bIndex) => {
-      let dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
+    for (let bIndex = bulletsArray.length - 1; bIndex >= 0; bIndex--) {
+      const bullet = bulletsArray[bIndex];
+      const dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
 
-      //removing bullets when they go off screen
+      // Remove bullets if they go off-screen
       if (
         bullet.x + bullet.radius < 0 ||
         bullet.x - bullet.radius > canvas.width ||
@@ -185,13 +188,15 @@ function animate() {
         bullet.y - bullet.radius > canvas.height
       ) {
         bulletsArray.splice(bIndex, 1);
+        continue;
       }
 
-      //removing enemy when bullet hits it
+      // Remove enemies and bullets on collision
       if (dist - enemy.radius - bullet.radius < 1) {
         score += 5;
         scoreElement.innerHTML = score;
-        //creating particles/explosions on hit
+
+        // Create particles/explosions on hit
         for (let i = 0; i < enemy.radius * 1.5; i++) {
           particlesArray.push(
             new Particle(bullet.x, bullet.y, Math.random() * 2, enemy.color, {
@@ -201,32 +206,24 @@ function animate() {
           );
         }
 
-        // shirinking and removing enemy on hit
-        if (enemy.radius - 15 > 10) {
-          setTimeout(() => {
-            gsap.to(enemy, {
-              radius: enemy.radius - 15,
-            });
-            bulletsArray.splice(bIndex, 1);
-          }, 0);
+        if (enemy.radius - 15 > 5) {
+          gsap.to(enemy, {
+            radius: enemy.radius - 15,
+          });
+          bulletsArray.splice(bIndex, 1);
         } else {
-          setTimeout(() => {
-            enemiesArray.splice(eIndex, 1);
-            bulletsArray.splice(bIndex, 1);
-          }, 0);
+          enemiesArray.splice(eIndex, 1);
+          bulletsArray.splice(bIndex, 1);
         }
       }
-    });
-
-    //end game
-    const distFromPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-
-    if (distFromPlayer - enemy.radius - player.radius < 1) {
-      setTimeout(() => {
-        endGame();
-      }, 0);
     }
-  });
+
+    // End game if enemy hits player
+    const distFromPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+    if (distFromPlayer - enemy.radius - player.radius < 1) {
+      endGame();
+    }
+  }
 }
 
 // making bullets on click
