@@ -29,6 +29,33 @@ function endGame() {
   score = 0;
 }
 
+//generating enemies
+function spawnEnemies() {
+  spawnEnemyIntervalId = setInterval(() => {
+    let radius = Math.random() * (40 - 10) + 10;
+    let x;
+    let y;
+    if (Math.random() < 0.5) {
+      x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+      y = Math.random() * (canvas.height - radius * 2) + radius;
+    } else {
+      x = Math.random() * (canvas.width - radius * 2) + radius;
+      y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+    }
+
+    // creating enemies
+    let color = `hsl(${Math.random() * 360},50%,50%)`;
+    let angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
+
+    let velocity = {
+      x: Math.cos(angle) * 2,
+      y: Math.sin(angle) * 2,
+    };
+
+    enemiesArray.push(new Enemy(x, y, radius, color, velocity));
+  }, 1000);
+}
+
 //all classes
 class Player {
   constructor(x, y, radius, color) {
@@ -126,33 +153,6 @@ class Particle {
 // invoking player class
 const player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 player.draw();
-
-//generating enemies
-function spawnEnemies() {
-  spawnEnemyIntervalId = setInterval(() => {
-    let radius = Math.random() * (50 - 10) + 10;
-    let x;
-    let y;
-    if (Math.random() < 0.5) {
-      x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
-      y = Math.random() * canvas.height;
-    } else {
-      x = Math.random() * canvas.width;
-      y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
-    }
-
-    // creating enemies
-    let color = `hsl(${Math.random() * 360},50%,50%)`;
-    let angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
-
-    let velocity = {
-      x: Math.cos(angle) * 2,
-      y: Math.sin(angle) * 2,
-    };
-
-    enemiesArray.push(new Enemy(x, y, radius, color, velocity));
-  }, 1000);
-}
 
 //animating
 let animationId;
@@ -252,4 +252,9 @@ startBtn.addEventListener("click", () => {
   animate();
   spawnEnemies();
   gameModal.style.display = "none";
+});
+
+// handling screen resize
+addEventListener("resize", () => {
+  location.reload();
 });
