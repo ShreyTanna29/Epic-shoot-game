@@ -206,9 +206,9 @@ function animate() {
           );
         }
 
-        if (enemy.radius - 15 > 5) {
+        if (enemy.radius - 10 > 7) {
           gsap.to(enemy, {
-            radius: enemy.radius - 15,
+            radius: enemy.radius - 10,
           });
           bulletsArray.splice(bIndex, 1);
         } else {
