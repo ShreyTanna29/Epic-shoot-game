@@ -206,7 +206,7 @@ function animate() {
           );
         }
 
-        if (enemy.radius - 10 > 7) {
+        if (enemy.radius - 10 > 10) {
           gsap.to(enemy, {
             radius: enemy.radius - 10,
           });
