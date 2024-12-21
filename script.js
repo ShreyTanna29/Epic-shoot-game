@@ -5,13 +5,8 @@ const gameModal = document.getElementById("gameModal");
 const startBtn = document.getElementById("startBtn");
 const endScore = document.getElementById("endScore");
 
-const dpr = devicePixelRatio || 1;
-
-canvas.width = innerWidth * dpr;
-canvas.height = innerHeight * dpr;
-canvas.style.width = `${innerWidth}px`;
-canvas.style.height = `${innerHeight}px`;
-ctx.scale(dpr, dpr);
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
 let bulletsArray = [];
 let enemiesArray = [];
