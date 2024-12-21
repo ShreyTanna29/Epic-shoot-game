@@ -4,9 +4,34 @@ const scoreElement = document.getElementById("scoreElement");
 const gameModal = document.getElementById("gameModal");
 const startBtn = document.getElementById("startBtn");
 const endScore = document.getElementById("endScore");
+const darkModeToggle = document.getElementById("darkModeToggle");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+// theme
+if (
+  localStorage.theme === "dark" ||
+  (!("theme" in localStorage) &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches)
+) {
+  document.documentElement.classList.add("dark");
+} else {
+  document.documentElement.classList.remove("dark");
+}
+
+darkModeToggle.addEventListener("click", () => {
+  document.documentElement.classList.toggle("dark");
+
+  // Save preference
+  if (document.documentElement.classList.contains("dark")) {
+    localStorage.theme = "dark";
+    player.color = "#ffffff"; // White color for player in dark mode
+  } else {
+    localStorage.theme = "light";
+    player.color = "#000000"; // Black color for player in light mode
+  }
+});
 
 let bulletsArray = [];
 let enemiesArray = [];
@@ -14,6 +39,10 @@ let particlesArray = [];
 let spawnEnemyIntervalId;
 
 //all functions
+function updateGameColors() {
+  const isDark = document.documentElement.classList.contains("dark");
+  player.color = isDark ? "#ffffff" : "#000000";
+}
 function init() {
   bulletsArray = [];
   enemiesArray = [];
@@ -74,18 +103,18 @@ class Player {
 }
 
 class Bullet {
-  constructor(x, y, radius, color, velocity) {
+  constructor(x, y, radius, velocity) {
     this.x = x;
     this.y = y;
     this.radius = radius;
-    this.color = color;
     this.velocity = velocity;
   }
 
   draw() {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
+    const isDark = document.documentElement.classList.contains("dark");
+    ctx.fillStyle = `${isDark ? "white" : "black"}`;
     ctx.fill();
   }
 
@@ -159,7 +188,8 @@ let animationId;
 let score = 0;
 function animate() {
   animationId = requestAnimationFrame(animate);
-  ctx.fillStyle = "rgba(0,0,0,0.1)";
+  const isDark = document.documentElement.classList.contains("dark");
+  ctx.fillStyle = isDark ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   bulletsArray.forEach((eachBullet) => eachBullet.update());
@@ -239,12 +269,13 @@ addEventListener("click", (event) => {
   };
 
   bulletsArray.push(
-    new Bullet(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
+    new Bullet(canvas.width / 2, canvas.height / 2, 5, velocity)
   );
 });
 
 // start game
 startBtn.addEventListener("click", () => {
+  updateGameColors();
   init();
   animate();
   spawnEnemies();
