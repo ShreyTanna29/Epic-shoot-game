@@ -92,13 +92,49 @@ class Player {
     this.y = y;
     this.radius = radius;
     this.color = color;
+    this.aimAngle = 0;
   }
 
   draw() {
+    // player circle
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     ctx.fillStyle = this.color;
     ctx.fill();
+
+    // aim circle
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius + 20, 0, Math.PI * 2, false);
+    ctx.strokeStyle = this.color;
+    ctx.stroke();
+
+    // aim arrow
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.aimAngle);
+
+    ctx.beginPath();
+    ctx.moveTo(this.radius + 20, 0);
+    ctx.lineTo(this.radius + 35, 0);
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // arrow head
+    ctx.beginPath();
+    ctx.moveTo(this.radius + 35, 0);
+    ctx.lineTo(this.radius + 30, -5);
+    ctx.lineTo(this.radius + 35, 0);
+    ctx.lineTo(this.radius + 30, 5);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  rotateAim(direction) {
+    const speed = 0.2;
+    this.aimAngle += direction * speed;
   }
 }
 
@@ -285,4 +321,35 @@ startBtn.addEventListener("click", () => {
 // handling screen resize
 addEventListener("resize", () => {
   location.reload();
+});
+
+// keyboard controls
+addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "ArrowLeft":
+    case "a":
+      player.rotateAim(-1);
+      break;
+    case "ArrowRight":
+    case "d":
+      player.rotateAim(1);
+      break;
+    case "ArrowUp":
+    case "w":
+      player.rotateAim(360);
+      break;
+    case "ArrowDown":
+    case "s":
+      player.rotateAim(-360);
+      break;
+    case " ":
+      const velocity = {
+        x: Math.cos(player.aimAngle) * 6,
+        y: Math.sin(player.aimAngle) * 6,
+      };
+      bulletsArray.push(
+        new Bullet(canvas.width / 2, canvas.height / 2, 5, velocity)
+      );
+      break;
+  }
 });
