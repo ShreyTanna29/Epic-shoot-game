@@ -1,5 +1,5 @@
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", { antialias: true });
 const scoreElement = document.getElementById("scoreElement");
 const gameModal = document.getElementById("gameModal");
 const startBtn = document.getElementById("startBtn");
