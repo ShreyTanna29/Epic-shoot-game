@@ -61,7 +61,7 @@ function endGame() {
 //generating enemies
 function spawnEnemies() {
   spawnEnemyIntervalId = setInterval(() => {
-    let radius = Math.random() * (30 - 8) + 8;
+    let radius = Math.random() * (30 - 10) + 10;
     let x;
     let y;
     if (Math.random() < 0.5) {
