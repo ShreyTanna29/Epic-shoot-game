@@ -61,7 +61,7 @@ function endGame() {
 //generating enemies
 function spawnEnemies() {
   spawnEnemyIntervalId = setInterval(() => {
-    let radius = Math.random() * (40 - 10) + 10;
+    let radius = Math.random() * (30 - 8) + 8;
     let x;
     let y;
     if (Math.random() < 0.5) {
@@ -236,7 +236,7 @@ function animate() {
           );
         }
 
-        if (enemy.radius - 10 > 10) {
+        if (enemy.radius - 10 > 8) {
           gsap.to(enemy, {
             radius: enemy.radius - 10,
           });
