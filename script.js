@@ -6,8 +6,27 @@ const startBtn = document.getElementById("startBtn");
 const endScore = document.getElementById("endScore");
 const darkModeToggle = document.getElementById("darkModeToggle");
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+const setCanvasSize = () => {
+  const ratio = window.devicePixelRatio || 1;
+
+  // Maintain CSS dimensions
+  canvas.style.width = `${innerWidth}px`;
+  canvas.style.height = `${innerHeight}px`;
+
+  // Set the actual canvas resolution
+  canvas.width = Math.floor(innerWidth * ratio);
+  canvas.height = Math.floor(innerHeight * ratio);
+
+  // Scale the context to match the device resolution
+  ctx.scale(ratio, ratio);
+};
+
+// Call this function on initialization and resize
+setCanvasSize();
+addEventListener("resize", () => {
+  setCanvasSize();
+  location.reload(); // Optional: Reloading can be replaced by reinitializing objects
+});
 
 // theme
 if (
@@ -180,7 +199,7 @@ class Particle {
 }
 
 // invoking player class
-const player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
+const player = new Player(innerWidth / 2, innerHeight / 2, 10, "white");
 player.draw();
 
 //animating
@@ -259,8 +278,8 @@ function animate() {
 // making bullets on click
 addEventListener("click", (event) => {
   const angle = Math.atan2(
-    event.clientY - canvas.height / 2,
-    event.clientX - canvas.width / 2
+    event.clientY - innerHeight / 2,
+    event.clientX - innerWidth / 2
   );
 
   const velocity = {
@@ -268,9 +287,7 @@ addEventListener("click", (event) => {
     y: Math.sin(angle) * 6,
   };
 
-  bulletsArray.push(
-    new Bullet(canvas.width / 2, canvas.height / 2, 5, velocity)
-  );
+  bulletsArray.push(new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity));
 });
 
 // start game
