@@ -1,3 +1,7 @@
+import { Player, Particle, Bullet } from "./src/classes/index.js";
+import { setCanvasSize } from "./src/utils/canvasSize.js";
+import spawnEnemies from "./src/gameLogic/spawnEnemies.js";
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d", { antialias: true });
 const scoreElement = document.getElementById("scoreElement");
@@ -6,26 +10,9 @@ const startBtn = document.getElementById("startBtn");
 const endScore = document.getElementById("endScore");
 const darkModeToggle = document.getElementById("darkModeToggle");
 
-const setCanvasSize = () => {
-  const ratio = window.devicePixelRatio || 1;
-
-  // Maintain CSS dimensions
-  canvas.style.width = `${innerWidth}px`;
-  canvas.style.height = `${innerHeight}px`;
-
-  // Set the actual canvas resolution
-  canvas.width = Math.floor(innerWidth * ratio);
-  canvas.height = Math.floor(innerHeight * ratio);
-
-  // Scale the context to match the device resolution
-  ctx.scale(ratio, ratio);
-};
-
-// Call this function on initialization and resize
-setCanvasSize();
 addEventListener("resize", () => {
-  setCanvasSize();
-  location.reload(); // Optional: Reloading can be replaced by reinitializing objects
+  setCanvasSize(canvas, ctx);
+  location.reload();
 });
 
 // theme
@@ -77,129 +64,8 @@ function endGame() {
   score = 0;
 }
 
-//generating enemies
-function spawnEnemies() {
-  spawnEnemyIntervalId = setInterval(() => {
-    let radius = Math.random() * (30 - 10) + 10;
-    let x;
-    let y;
-    if (Math.random() < 0.5) {
-      x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
-      y = Math.random() * (canvas.height - radius * 2) + radius;
-    } else {
-      x = Math.random() * (canvas.width - radius * 2) + radius;
-      y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
-    }
-
-    // creating enemies
-    let color = `hsl(${Math.random() * 360},50%,50%)`;
-    let angle = Math.atan2(innerHeight / 2 - y, innerWidth / 2 - x);
-
-    let velocity = {
-      x: Math.cos(angle) * 2,
-      y: Math.sin(angle) * 2,
-    };
-
-    enemiesArray.push(new Enemy(x, y, radius, color, velocity));
-  }, 1000);
-}
-
-//all classes
-class Player {
-  constructor(x, y, radius, color) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-  }
-}
-
-class Bullet {
-  constructor(x, y, radius, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.velocity = velocity;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    const isDark = document.documentElement.classList.contains("dark");
-    ctx.fillStyle = `${isDark ? "white" : "black"}`;
-    ctx.fill();
-  }
-
-  update() {
-    this.draw();
-    this.x += this.velocity.x;
-    this.y += this.velocity.y;
-  }
-}
-
-class Enemy {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-  }
-
-  update() {
-    this.draw();
-    this.x += this.velocity.x;
-    this.y += this.velocity.y;
-  }
-}
-
-class Particle {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-    this.opacity = 1;
-  }
-
-  draw() {
-    ctx.save();
-    ctx.globalAlpha = this.opacity;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  update() {
-    this.draw();
-    //adding friction so particels. so particles are slowed down.
-    this.velocity.x *= 0.99;
-    this.velocity.y *= 0.99;
-    this.x += this.velocity.x;
-    this.y += this.velocity.y;
-    this.opacity -= 0.01;
-  }
-}
-
 // invoking player class
-const player = new Player(innerWidth / 2, innerHeight / 2, 10, "white");
+const player = new Player(innerWidth / 2, innerHeight / 2, 10, "white", ctx);
 player.draw();
 
 //animating
@@ -248,10 +114,17 @@ function animate() {
         // Create particles/explosions on hit
         for (let i = 0; i < enemy.radius * 1.5; i++) {
           particlesArray.push(
-            new Particle(bullet.x, bullet.y, Math.random() * 2, enemy.color, {
-              x: (Math.random() - 0.5) * (Math.random() * 8),
-              y: (Math.random() - 0.5) * (Math.random() * 8),
-            })
+            new Particle(
+              bullet.x,
+              bullet.y,
+              Math.random() * 2,
+              enemy.color,
+              {
+                x: (Math.random() - 0.5) * (Math.random() * 8),
+                y: (Math.random() - 0.5) * (Math.random() * 8),
+              },
+              ctx
+            )
           );
         }
 
@@ -287,15 +160,19 @@ addEventListener("click", (event) => {
     y: Math.sin(angle) * 6,
   };
 
-  bulletsArray.push(new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity));
+  bulletsArray.push(
+    new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx)
+  );
 });
 
 // start game
 startBtn.addEventListener("click", () => {
   updateGameColors();
+  setCanvasSize(canvas, ctx);
   init();
   animate();
-  spawnEnemies();
+  const { intervalId } = spawnEnemies(canvas, enemiesArray, ctx);
+  spawnEnemyIntervalId = intervalId;
   gameModal.style.display = "none";
 });
 
