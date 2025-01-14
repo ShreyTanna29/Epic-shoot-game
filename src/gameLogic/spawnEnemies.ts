@@ -1,4 +1,4 @@
-import { Enemy } from "../classes/index.js";
+import { Enemy } from "../classes/index";
 function spawnEnemies(
   canvas: HTMLCanvasElement,
   enemiesArray: Enemy[],

@@ -47,7 +47,7 @@ darkModeToggle.addEventListener("click", () => {
 let bulletsArray: Bullet[] = [];
 let enemiesArray: Enemy[] = [];
 let particlesArray: Particle[] = [];
-let spawnEnemyIntervalId: number;
+let spawnEnemyIntervalId: ReturnType<typeof setInterval>;
 
 //all functions
 function updateGameColors() {
@@ -113,8 +113,8 @@ function animate() {
 
       // Remove enemies and bullets on collision
       if (dist - enemy.radius - bullet.radius < 1) {
-        score += 5;
-        scoreElement.innerHTML = score;
+        score = String(Number(score) + 5);
+        scoreElement.innerHTML = String(score);
 
         // Create particles/explosions on hit
         for (let i = 0; i < enemy.radius * 1.5; i++) {
