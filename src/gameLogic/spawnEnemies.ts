@@ -1,5 +1,9 @@
 import { Enemy } from "../classes/index.js";
-function spawnEnemies(canvas, enemiesArray, ctx) {
+function spawnEnemies(
+  canvas: HTMLCanvasElement,
+  enemiesArray: Enemy[],
+  ctx: CanvasRenderingContext2D
+) {
   let spawnEnemyIntervalId = setInterval(() => {
     let radius = Math.random() * (30 - 10) + 10;
     let x;

@@ -1,4 +1,7 @@
-export const setCanvasSize = (canvas, ctx) => {
+export const setCanvasSize = (
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D
+) => {
   const ratio = window.devicePixelRatio || 1;
 
   // Maintain CSS dimensions
