@@ -1,0 +1,1 @@
+{"root":["./src/script.ts","./src/classes/bullet.class.ts","./src/classes/enemy.class.ts","./src/classes/index.ts","./src/classes/particle.class.ts","./src/classes/player.class.ts","./src/gameLogic/spawnEnemies.ts","./src/utils/canvasSize.ts"],"version":"5.6.3"}

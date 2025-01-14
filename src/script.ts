@@ -1,6 +1,7 @@
 import { Player, Particle, Bullet, Enemy } from "./classes/index";
 import { setCanvasSize } from "./utils/canvasSize";
 import spawnEnemies from "./gameLogic/spawnEnemies";
+import gsap from "gsap";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d", {
@@ -175,7 +176,7 @@ startBtn.addEventListener("click", () => {
   setCanvasSize(canvas, ctx);
   init();
   animate();
-  const { intervalId } = spawnEnemies(canvas, enemiesArray, ctx);
+  const intervalId = spawnEnemies(canvas, enemiesArray, ctx);
   spawnEnemyIntervalId = intervalId;
   gameModal.style.display = "none";
 });

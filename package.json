@@ -1,0 +1,15 @@
+{
+  "name": "shooter-game",
+  "version": "1.0.0",
+  "description": "[Screencast from 2024-12-20 11-40-52.webm](https://github.com/user-attachments/assets/ab0eb060-8f96-4bab-9f04-7922c063232d)",
+  "main": "dist/script.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shrey Tanna",
+  "license": "ISC",
+  "dependencies": {
+    "gsap": "^3.12.5"
+  }
+}
