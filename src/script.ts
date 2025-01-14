@@ -1,14 +1,18 @@
-import { Player, Particle, Bullet } from "./src/classes/index.js";
-import { setCanvasSize } from "./src/utils/canvasSize.js";
-import spawnEnemies from "./src/gameLogic/spawnEnemies.js";
+import { Player, Particle, Bullet, Enemy } from "./classes/index";
+import { setCanvasSize } from "./utils/canvasSize";
+import spawnEnemies from "./gameLogic/spawnEnemies";
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", { antialias: true });
-const scoreElement = document.getElementById("scoreElement");
-const gameModal = document.getElementById("gameModal");
-const startBtn = document.getElementById("startBtn");
-const endScore = document.getElementById("endScore");
-const darkModeToggle = document.getElementById("darkModeToggle");
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d", {
+  antialias: true,
+}) as CanvasRenderingContext2D;
+const scoreElement = document.getElementById("scoreElement") as HTMLSpanElement;
+const gameModal = document.getElementById("gameModal") as HTMLDivElement;
+const startBtn = document.getElementById("startBtn") as HTMLButtonElement;
+const endScore = document.getElementById("endScore") as HTMLHeadingElement;
+const darkModeToggle = document.getElementById(
+  "darkModeToggle"
+) as HTMLButtonElement;
 
 addEventListener("resize", () => {
   setCanvasSize(canvas, ctx);
@@ -39,10 +43,10 @@ darkModeToggle.addEventListener("click", () => {
   }
 });
 
-let bulletsArray = [];
-let enemiesArray = [];
-let particlesArray = [];
-let spawnEnemyIntervalId;
+let bulletsArray: Bullet[] = [];
+let enemiesArray: Enemy[] = [];
+let particlesArray: Particle[] = [];
+let spawnEnemyIntervalId: number;
 
 //all functions
 function updateGameColors() {
@@ -53,7 +57,7 @@ function init() {
   bulletsArray = [];
   enemiesArray = [];
   particlesArray = [];
-  scoreElement.innerHTML = 0;
+  scoreElement.innerHTML = String(0);
   clearInterval(spawnEnemyIntervalId);
 }
 
@@ -61,7 +65,7 @@ function endGame() {
   cancelAnimationFrame(animationId);
   gameModal.style.display = "flex";
   endScore.innerHTML = score;
-  score = 0;
+  score = String(0);
 }
 
 // invoking player class
@@ -69,8 +73,8 @@ const player = new Player(innerWidth / 2, innerHeight / 2, 10, "white", ctx);
 player.draw();
 
 //animating
-let animationId;
-let score = 0;
+let animationId: number;
+let score = String(0);
 function animate() {
   animationId = requestAnimationFrame(animate);
   const isDark = document.documentElement.classList.contains("dark");
