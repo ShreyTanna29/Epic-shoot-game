@@ -1,5 +1,17 @@
 export class Bullet {
-  constructor(x, y, radius, velocity, ctx) {
+  private ctx: CanvasRenderingContext2D;
+  public x: number;
+  public y: number;
+  public radius: number;
+  public velocity: { x: number; y: number };
+
+  constructor(
+    x: number,
+    y: number,
+    radius: number,
+    velocity: { x: number; y: number },
+    ctx: CanvasRenderingContext2D
+  ) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;

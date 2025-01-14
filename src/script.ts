@@ -1,14 +1,19 @@
-import { Player, Particle, Bullet } from "./src/classes/index.js";
-import { setCanvasSize } from "./src/utils/canvasSize.js";
-import spawnEnemies from "./src/gameLogic/spawnEnemies.js";
+import { Player, Particle, Bullet, Enemy } from "./classes/index";
+import { setCanvasSize } from "./utils/canvasSize";
+import spawnEnemies from "./gameLogic/spawnEnemies";
+import gsap from "gsap";
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", { antialias: true });
-const scoreElement = document.getElementById("scoreElement");
-const gameModal = document.getElementById("gameModal");
-const startBtn = document.getElementById("startBtn");
-const endScore = document.getElementById("endScore");
-const darkModeToggle = document.getElementById("darkModeToggle");
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d", {
+  antialias: true,
+}) as CanvasRenderingContext2D;
+const scoreElement = document.getElementById("scoreElement") as HTMLSpanElement;
+const gameModal = document.getElementById("gameModal") as HTMLDivElement;
+const startBtn = document.getElementById("startBtn") as HTMLButtonElement;
+const endScore = document.getElementById("endScore") as HTMLHeadingElement;
+const darkModeToggle = document.getElementById(
+  "darkModeToggle"
+) as HTMLButtonElement;
 
 addEventListener("resize", () => {
   setCanvasSize(canvas, ctx);
@@ -39,10 +44,10 @@ darkModeToggle.addEventListener("click", () => {
   }
 });
 
-let bulletsArray = [];
-let enemiesArray = [];
-let particlesArray = [];
-let spawnEnemyIntervalId;
+let bulletsArray: Bullet[] = [];
+let enemiesArray: Enemy[] = [];
+let particlesArray: Particle[] = [];
+let spawnEnemyIntervalId: ReturnType<typeof setInterval>;
 
 //all functions
 function updateGameColors() {
@@ -53,7 +58,7 @@ function init() {
   bulletsArray = [];
   enemiesArray = [];
   particlesArray = [];
-  scoreElement.innerHTML = 0;
+  scoreElement.innerHTML = String(0);
   clearInterval(spawnEnemyIntervalId);
 }
 
@@ -61,7 +66,7 @@ function endGame() {
   cancelAnimationFrame(animationId);
   gameModal.style.display = "flex";
   endScore.innerHTML = score;
-  score = 0;
+  score = String(0);
 }
 
 // invoking player class
@@ -69,8 +74,8 @@ const player = new Player(innerWidth / 2, innerHeight / 2, 10, "white", ctx);
 player.draw();
 
 //animating
-let animationId;
-let score = 0;
+let animationId: number;
+let score = String(0);
 function animate() {
   animationId = requestAnimationFrame(animate);
   const isDark = document.documentElement.classList.contains("dark");
@@ -108,8 +113,8 @@ function animate() {
 
       // Remove enemies and bullets on collision
       if (dist - enemy.radius - bullet.radius < 1) {
-        score += 5;
-        scoreElement.innerHTML = score;
+        score = String(Number(score) + 5);
+        scoreElement.innerHTML = String(score);
 
         // Create particles/explosions on hit
         for (let i = 0; i < enemy.radius * 1.5; i++) {
@@ -171,7 +176,7 @@ startBtn.addEventListener("click", () => {
   setCanvasSize(canvas, ctx);
   init();
   animate();
-  const { intervalId } = spawnEnemies(canvas, enemiesArray, ctx);
+  const intervalId = spawnEnemies(canvas, enemiesArray, ctx);
   spawnEnemyIntervalId = intervalId;
   gameModal.style.display = "none";
 });

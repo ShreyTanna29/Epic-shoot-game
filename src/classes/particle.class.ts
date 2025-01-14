@@ -1,5 +1,20 @@
 export class Particle {
-  constructor(x, y, radius, color, velocity, ctx) {
+  private ctx: CanvasRenderingContext2D;
+  private x: number;
+  private y: number;
+  private radius: number;
+  private velocity: { x: number; y: number };
+  private color: string;
+  public opacity: number;
+
+  constructor(
+    x: number,
+    y: number,
+    radius: number,
+    color: string,
+    velocity: { x: number; y: number },
+    ctx: CanvasRenderingContext2D
+  ) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
