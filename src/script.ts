@@ -117,7 +117,7 @@ function animate() {
         scoreElement.innerHTML = String(score);
 
         // Create particles/explosions on hit
-        for (let i = 0; i < enemy.radius * 1.5; i++) {
+        for (let i = 0; i < enemy.radius * (innerWidth < 800 ? 1 : 1.5); i++) {
           particlesArray.push(
             new Particle(
               bullet.x,
@@ -133,9 +133,9 @@ function animate() {
           );
         }
 
-        if (enemy.radius - 10 > 8) {
+        if (enemy.radius - 5 >= 10) {
           gsap.to(enemy, {
-            radius: enemy.radius - 10,
+            radius: enemy.radius - 5,
           });
           bulletsArray.splice(bIndex, 1);
         } else {

@@ -11,7 +11,7 @@ export default function spawnEnemies(
   function spawn() {
     const currentTime = Date.now();
     if (currentTime - lastSpawnTime >= spawnDelay) {
-      let radius = Math.random() * (30 - 10) + 10;
+      let radius = Math.random() * (25 - 8) + 8;
       let x, y;
 
       if (Math.random() < 0.5) {
