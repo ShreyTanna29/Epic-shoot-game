@@ -47,7 +47,7 @@ darkModeToggle.addEventListener("click", () => {
 let bulletsArray: Bullet[] = [];
 let enemiesArray: Enemy[] = [];
 let particlesArray: Particle[] = [];
-let spawnEnemyIntervalId: ReturnType<typeof setInterval>;
+let spawnEnemyIntervalId: () => void;
 
 //all functions
 function updateGameColors() {
@@ -59,7 +59,7 @@ function init() {
   enemiesArray = [];
   particlesArray = [];
   scoreElement.innerHTML = String(0);
-  clearInterval(spawnEnemyIntervalId);
+  if (spawnEnemyIntervalId) spawnEnemyIntervalId();
 }
 
 function endGame() {

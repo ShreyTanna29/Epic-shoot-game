@@ -18,4 +18,11 @@ module.exports = {
     filename: "bundle.js",
     path: path.resolve(__dirname, "public"),
   },
+  devServer: {
+    static: "./public",
+    hot: true,
+    open: true,
+    port: 3000,
+  },
+  mode: "production",
 };

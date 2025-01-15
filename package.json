@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "webpack --mode production",
-    "dev": "webpack --mode development --watch"
+    "dev": "webpack serve --open"
   },
   "author": "Shrey Tanna",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
     "webpack": "^5.97.1",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0"
   }
 }
