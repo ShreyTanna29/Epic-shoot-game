@@ -16,9 +16,21 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
+  /* THIS IS HOW WS MESSAGE LOOK LIKE:
+
+ {
+  "event":"init",
+  "data":{
+    "name":"abc",
+    "canvasWidth":100,
+    "canvasHeight":100
+  }
+ }
+  
+  */
   @SubscribeMessage('init')
   handleMessage(client: WebSocket, payload: InitGameDto): void {
-    this.gameService.init(payload.name, client);
+    this.gameService.init(payload, client);
   }
 
   afterInit() {

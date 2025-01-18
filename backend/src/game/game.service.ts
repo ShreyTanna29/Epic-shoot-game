@@ -2,17 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { Store } from 'src/store/store';
 import { Player } from 'src/types/player.type';
 import { WebSocket } from 'ws';
+import { InitGameDto } from './dto/init-game.dto';
 
 @Injectable()
 export class GameService {
   private instance = Store.getInstance();
   private clientsArray: WebSocket[] = [];
 
-  init(name: string, client: WebSocket) {
-    this.instance.addPlayer(name);
+  init(playerDetails: InitGameDto, client: WebSocket) {
+    // adding player to waiting array till another player joins
+    this.instance.addPlayer(
+      playerDetails.name,
+      playerDetails.canvasWidth,
+      playerDetails.canvasHeight,
+    );
     this.clientsArray.push(client);
     const waitingPlayersList = this.instance.getWaitingList();
-    console.log(this.instance.getWaitingList());
 
     if (waitingPlayersList.length >= 2) {
       // NOTE: here player1 and player2 contains details of player and PlayerClient1 and PlayerClient2 contains WebSocket Client of both players, so to send data use PlayerClient1 or PlayerCLient2.
@@ -21,12 +26,13 @@ export class GameService {
       const PlayerClient1 = this.clientsArray.shift();
       const PlayerClient2 = this.clientsArray.shift();
 
-      console.log(this.instance.getWaitingList());
-
       PlayerClient1.send(
         JSON.stringify({
           data: {
-            opponent: player2.name,
+            opponent: { name: player2.name },
+            player: {
+              name: player1.name,
+            },
           },
         }),
       );
@@ -34,10 +40,22 @@ export class GameService {
       PlayerClient2.send(
         JSON.stringify({
           data: {
-            opponent: player1.name,
+            opponent: { name: player1.name },
+            player: {
+              name: player2.name,
+            },
           },
         }),
       );
+
+      const roomId = this.instance.createRoom(
+        player1,
+        player2,
+        PlayerClient1,
+        PlayerClient2,
+      );
+
+      this.instance.sendEnemies(roomId);
     }
   }
 }
