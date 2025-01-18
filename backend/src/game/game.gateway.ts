@@ -5,6 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, WebSocket } from 'ws';
 import { GameService } from './game.service';
+import { InitGameDto } from './dto/init-game.dto';
 
 @WebSocketGateway({
   path: '/game',
@@ -16,9 +17,8 @@ export class GameGateway {
   server: Server;
 
   @SubscribeMessage('init')
-  handleMessage(client: WebSocket, payload: any): void {
-    this.gameService.init(payload.name);
-    console.log(payload);
+  handleMessage(client: WebSocket, payload: InitGameDto): void {
+    this.gameService.init(payload.name, client);
   }
 
   afterInit() {
