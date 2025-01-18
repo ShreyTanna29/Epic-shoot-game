@@ -6,6 +6,7 @@ import {
 import { Server, WebSocket } from 'ws';
 import { GameService } from './game.service';
 import { InitGameDto } from './dto/init-game.dto';
+import { HitEnemyDto } from './dto/hit-enemy.dto';
 
 @WebSocketGateway({
   path: '/game',
@@ -29,11 +30,29 @@ export class GameGateway {
   
   */
   @SubscribeMessage('init')
-  handleMessage(client: WebSocket, payload: InitGameDto): void {
+  handleInit(client: WebSocket, payload: InitGameDto): void {
     this.gameService.init(payload, client);
   }
 
   afterInit() {
     console.log('wss connected');
+  }
+
+  /*  
+  DATA STRUCTURE OF HITENEMY MESSAGE
+
+  {
+  event: "HitEnemy",
+  data: {
+  playerId: id of player,
+  EnemyId: id of enemy,
+  roomId: id of room
+  }
+  }
+  
+  */
+  @SubscribeMessage('HitEnemy')
+  handleHitEnemy(client: WebSocket, payload: HitEnemyDto) {
+    this.gameService.hitEnemy(payload);
   }
 }

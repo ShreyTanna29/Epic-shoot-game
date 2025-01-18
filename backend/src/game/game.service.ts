@@ -3,6 +3,7 @@ import { Store } from 'src/store/store';
 import { Player } from 'src/types/player.type';
 import { WebSocket } from 'ws';
 import { InitGameDto } from './dto/init-game.dto';
+import { HitEnemyDto } from './dto/hit-enemy.dto';
 
 @Injectable()
 export class GameService {
@@ -26,12 +27,21 @@ export class GameService {
       const PlayerClient1 = this.clientsArray.shift();
       const PlayerClient2 = this.clientsArray.shift();
 
+      const roomId = this.instance.createRoom(
+        player1,
+        player2,
+        PlayerClient1,
+        PlayerClient2,
+      );
+
       PlayerClient1.send(
         JSON.stringify({
           data: {
             opponent: { name: player2.name },
             player: {
               name: player1.name,
+              id: player1.id,
+              roomId,
             },
           },
         }),
@@ -43,19 +53,22 @@ export class GameService {
             opponent: { name: player1.name },
             player: {
               name: player2.name,
+              id: player2.id,
+              roomId,
             },
           },
         }),
       );
 
-      const roomId = this.instance.createRoom(
-        player1,
-        player2,
-        PlayerClient1,
-        PlayerClient2,
-      );
-
       this.instance.sendEnemies(roomId);
     }
+  }
+
+  hitEnemy(hitDetails: HitEnemyDto) {
+    this.instance.hitEnemy(
+      hitDetails.roomId,
+      hitDetails.enemyId,
+      hitDetails.playerId,
+    );
   }
 }
