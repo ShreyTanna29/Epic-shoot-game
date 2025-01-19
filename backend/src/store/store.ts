@@ -50,10 +50,10 @@ export class Store {
     return roomId;
   }
 
-  sendEnemies(roomId: number) {
+  async sendEnemies(roomId: number) {
     const currentRoom = this.rooms.find((room) => room.id === roomId);
     setInterval(() => {
-      const enemy = createEnemy(
+      const enemy: Enemy = createEnemy(
         currentRoom.player1Details.canvasWidth,
         currentRoom.player1Details.canvasHeight,
       );
@@ -68,6 +68,7 @@ export class Store {
     const targetEnemy: Enemy = this.enemies.find(
       (enemy) => enemy.id === enemyId,
     );
+    console.log('enemy: ', targetEnemy);
     const receiver =
       currentRoom.player1Details.id === playerId
         ? currentRoom.player2Client

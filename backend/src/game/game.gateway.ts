@@ -2,15 +2,32 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, WebSocket } from 'ws';
 import { GameService } from './game.service';
 import { InitGameDto } from './dto/init-game.dto';
 import { HitEnemyDto } from './dto/hit-enemy.dto';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { WebSocketExceptionFilter } from 'src/exceptionFilters/WsException.filter';
 
 @WebSocketGateway({
   path: '/game',
 })
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+    exceptionFactory: (errors) => {
+      const result = errors.map((error) => ({
+        property: error.property,
+        message: error.constraints[Object.keys(error.constraints)[0]],
+      }));
+      return new WsException(result);
+    },
+  }),
+)
+@UseFilters(WebSocketExceptionFilter)
 export class GameGateway {
   constructor(private gameService: GameService) {}
 
@@ -42,11 +59,11 @@ export class GameGateway {
   DATA STRUCTURE OF HITENEMY MESSAGE
 
   {
-  event: "HitEnemy",
-  data: {
-  playerId: id of player,
-  EnemyId: id of enemy,
-  roomId: id of room
+  "event": "HitEnemy",
+  "data": {
+  "playerId": id of player,
+  "enemyId": id of enemy,
+  "roomId": id of room
   }
   }
   
