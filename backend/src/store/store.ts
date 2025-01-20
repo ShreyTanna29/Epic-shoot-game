@@ -1,3 +1,4 @@
+import { EndGameDto } from 'src/game/dto/end-game.dto';
 import { Enemy } from 'src/types/enemy.type';
 import { Player } from 'src/types/player.type';
 import { Room } from 'src/types/room.type';
@@ -46,13 +47,14 @@ export class Store {
       player1Client,
       player2Client,
       id: roomId,
+      intervalId: null,
     });
     return roomId;
   }
 
   async sendEnemies(roomId: number) {
     const currentRoom = this.rooms.find((room) => room.id === roomId);
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       const enemy: Enemy = createEnemy(
         currentRoom.player1Details.canvasWidth,
         currentRoom.player1Details.canvasHeight,
@@ -61,6 +63,8 @@ export class Store {
       currentRoom.player1Client.send(JSON.stringify(enemy));
       currentRoom.player2Client.send(JSON.stringify(enemy));
     }, 1000);
+
+    currentRoom.intervalId = intervalId;
   }
 
   hitEnemy(roomId: number, enemyId: number, playerId: number) {
@@ -80,10 +84,21 @@ export class Store {
         JSON.stringify({ event: 'reduceEnemy', data: { enemyId } }),
       );
     } else {
-      this.enemies.filter((enemy) => enemy.id !== enemyId);
+      this.enemies = this.enemies.filter((enemy) => enemy.id !== enemyId);
       receiver.send(
         JSON.stringify({ event: 'removeEnemy', data: { enemyId } }),
       );
+    }
+  }
+
+  endGame(playerDetails: EndGameDto) {
+    const room = this.rooms.find((room) => room.id === playerDetails.roomId); // finding room
+    this.rooms = this.rooms.filter((room) => room.id === playerDetails.roomId); // removing room from rooms array
+    clearInterval(room.intervalId); // clearing enemies interval id, so enemy generation gets stopped
+    if (room.player1Details.id === playerDetails.playerId) {
+      room.player2Client.send(JSON.stringify({ event: 'WIN' }));
+    } else {
+      room.player1Client.send(JSON.stringify({ event: 'WIN' }));
     }
   }
 }

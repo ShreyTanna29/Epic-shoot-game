@@ -7,4 +7,5 @@ export type Room = {
   player2Details: Player;
   player1Client: WebSocket;
   player2Client: WebSocket;
+  intervalId: NodeJS.Timeout | null;
 };

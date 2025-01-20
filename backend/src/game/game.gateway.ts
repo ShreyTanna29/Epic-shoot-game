@@ -10,6 +10,7 @@ import { InitGameDto } from './dto/init-game.dto';
 import { HitEnemyDto } from './dto/hit-enemy.dto';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WebSocketExceptionFilter } from 'src/exceptionFilters/WsException.filter';
+import { EndGameDto } from './dto/end-game.dto';
 
 @WebSocketGateway({
   path: '/game',
@@ -59,7 +60,7 @@ export class GameGateway {
   DATA STRUCTURE OF HITENEMY MESSAGE
 
   {
-  "event": "HitEnemy",
+  "event": "hitEnemy",
   "data": {
   "playerId": id of player,
   "enemyId": id of enemy,
@@ -68,8 +69,24 @@ export class GameGateway {
   }
   
   */
-  @SubscribeMessage('HitEnemy')
+  @SubscribeMessage('hitEnemy')
   handleHitEnemy(client: WebSocket, payload: HitEnemyDto) {
     this.gameService.hitEnemy(payload);
+  }
+
+  /* 
+END GAME PAYLOAD STRUCTURE
+{
+"event": "endGame",
+"data": {
+"playerId": 123,
+"roomId": 123
+}
+}
+*/
+
+  @SubscribeMessage('endGame')
+  handleEndGame(client: WebSocket, payload: EndGameDto) {
+    this.gameService.endGame(payload);
   }
 }

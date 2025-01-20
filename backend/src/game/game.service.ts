@@ -4,6 +4,7 @@ import { Player } from 'src/types/player.type';
 import { WebSocket } from 'ws';
 import { InitGameDto } from './dto/init-game.dto';
 import { HitEnemyDto } from './dto/hit-enemy.dto';
+import { EndGameDto } from './dto/end-game.dto';
 
 @Injectable()
 export class GameService {
@@ -70,5 +71,9 @@ export class GameService {
       hitDetails.enemyId,
       hitDetails.playerId,
     );
+  }
+
+  endGame(playerDetails: EndGameDto) {
+    this.instance.endGame(playerDetails);
   }
 }
