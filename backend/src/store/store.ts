@@ -1,4 +1,5 @@
 import { EndGameDto } from 'src/game/dto/end-game.dto';
+import { FireBulletDto } from 'src/game/dto/fire-bullet.dto';
 import { Enemy } from 'src/types/enemy.type';
 import { Player } from 'src/types/player.type';
 import { Room } from 'src/types/room.type';
@@ -101,6 +102,40 @@ export class Store {
       this.enemies = this.enemies.filter((enemy) => enemy.id !== enemyId);
       receiver.send(
         JSON.stringify({ event: 'removeEnemy', data: { enemyId } }),
+      );
+    }
+  }
+
+  fireBullet(bulletDetails: FireBulletDto) {
+    const room = this.rooms.find((room) => room.id === bulletDetails.roomId);
+
+    if (room.player1Details.id === bulletDetails.playerId) {
+      room.player2Client.send(
+        JSON.stringify({
+          event: 'fireBullet',
+          data: {
+            bullet: {
+              x: bulletDetails.x,
+              y: bulletDetails.y,
+              radius: bulletDetails.radius,
+              velocity: bulletDetails.velocity,
+            },
+          },
+        }),
+      );
+    } else {
+      room.player1Client.send(
+        JSON.stringify({
+          event: 'fireBullet',
+          data: {
+            bullet: {
+              x: bulletDetails.x,
+              y: bulletDetails.y,
+              radius: bulletDetails.radius,
+              velocity: bulletDetails.velocity,
+            },
+          },
+        }),
       );
     }
   }

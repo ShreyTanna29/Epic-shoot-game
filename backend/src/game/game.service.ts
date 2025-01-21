@@ -5,6 +5,7 @@ import { WebSocket } from 'ws';
 import { InitGameDto } from './dto/init-game.dto';
 import { HitEnemyDto } from './dto/hit-enemy.dto';
 import { EndGameDto } from './dto/end-game.dto';
+import { FireBulletDto } from './dto/fire-bullet.dto';
 
 @Injectable()
 export class GameService {
@@ -73,6 +74,10 @@ export class GameService {
       hitDetails.enemyId,
       hitDetails.playerId,
     );
+  }
+
+  fireBullet(bulletDetails: FireBulletDto) {
+    this.instance.fireBullet(bulletDetails);
   }
 
   endGame(playerDetails: EndGameDto) {

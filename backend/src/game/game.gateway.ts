@@ -11,6 +11,7 @@ import { HitEnemyDto } from './dto/hit-enemy.dto';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WebSocketExceptionFilter } from 'src/exceptionFilters/WsException.filter';
 import { EndGameDto } from './dto/end-game.dto';
+import { FireBulletDto } from './dto/fire-bullet.dto';
 
 @WebSocketGateway({
   path: '/game',
@@ -72,6 +73,11 @@ export class GameGateway {
   @SubscribeMessage('hitEnemy')
   handleHitEnemy(client: WebSocket, payload: HitEnemyDto) {
     this.gameService.hitEnemy(payload);
+  }
+
+  @SubscribeMessage('fireBullet')
+  handleFireBullet(client: WebSocket, payload: FireBulletDto) {
+    this.gameService.fireBullet(payload);
   }
 
   /* 
