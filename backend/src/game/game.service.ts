@@ -37,6 +37,7 @@ export class GameService {
 
       PlayerClient1.send(
         JSON.stringify({
+          event: 'start',
           data: {
             opponent: { name: player2.name },
             player: {
@@ -50,6 +51,7 @@ export class GameService {
 
       PlayerClient2.send(
         JSON.stringify({
+          event: 'start',
           data: {
             opponent: { name: player1.name },
             player: {

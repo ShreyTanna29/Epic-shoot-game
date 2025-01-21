@@ -60,8 +60,22 @@ export class Store {
         currentRoom.player1Details.canvasHeight,
       );
       this.enemies.push(enemy);
-      currentRoom.player1Client.send(JSON.stringify(enemy));
-      currentRoom.player2Client.send(JSON.stringify(enemy));
+      currentRoom.player1Client.send(
+        JSON.stringify({
+          event: 'createEnemy',
+          data: {
+            enemy,
+          },
+        }),
+      );
+      currentRoom.player2Client.send(
+        JSON.stringify({
+          event: 'createEnemy',
+          data: {
+            enemy,
+          },
+        }),
+      );
     }, 1000);
 
     currentRoom.intervalId = intervalId;
