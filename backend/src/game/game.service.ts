@@ -44,6 +44,7 @@ export class GameService {
             player: {
               name: player1.name,
               id: player1.id,
+              number: 1,
               roomId,
             },
           },
@@ -58,6 +59,7 @@ export class GameService {
             player: {
               name: player2.name,
               id: player2.id,
+              number: 2,
               roomId,
             },
           },

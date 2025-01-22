@@ -19,6 +19,12 @@ const endScore = document.getElementById("endScore") as HTMLHeadingElement;
 const darkModeToggle = document.getElementById(
   "darkModeToggle"
 ) as HTMLButtonElement;
+const wonElement = document.getElementById(
+  "wonElement"
+) as HTMLParagraphElement;
+const lostElement = document.getElementById(
+  "lostElement"
+) as HTMLParagraphElement;
 
 addEventListener("resize", () => {
   setCanvasSize(canvas, ctx);
@@ -60,6 +66,7 @@ let multiplayer = false;
 let ws: WebSocket;
 let playerId: number;
 let roomId: number;
+let playerNumber: number;
 
 //all functions
 function updateGameColors() {
@@ -72,6 +79,8 @@ function init() {
   enemiesArray = [];
   particlesArray = [];
   scoreElement.innerHTML = String(0);
+  wonElement.style.display = "none";
+  lostElement.style.display = "none";
   if (spawnEnemyIntervalId) spawnEnemyIntervalId();
 }
 
@@ -190,12 +199,59 @@ function animate(multiPlayer: boolean) {
     }
 
     // End game if enemy hits player
-    const distFromPlayer = Math.hypot(
-      playersArray[0].x - enemy.x,
-      playersArray[0].y - enemy.y
-    );
-    if (distFromPlayer - enemy.radius - playersArray[0].radius < 1) {
-      endGame();
+    if (multiPlayer) {
+      const distFromPlayer1 = Math.hypot(
+        playersArray[0].x - enemy.x,
+        playersArray[0].y - enemy.y
+      );
+
+      const distFromPlayer2 = Math.hypot(
+        playersArray[1].x - enemy.x,
+        playersArray[1].y - enemy.y
+      );
+
+      if (distFromPlayer1 - enemy.radius - playersArray[0].radius < 1) {
+        endGame();
+        if (playerNumber === 1) {
+          lostElement.style.display = "block";
+        } else {
+          wonElement.style.display = "block";
+        }
+
+        ws.send(
+          JSON.stringify({
+            event: "endGame",
+            data: {
+              roomId,
+            },
+          })
+        );
+      }
+
+      if (distFromPlayer2 - enemy.radius - playersArray[1].radius < 1) {
+        endGame();
+        if (playerNumber === 1) {
+          lostElement.style.display = "block";
+        } else {
+          wonElement.style.display = "block";
+        }
+      }
+    } else {
+      const distFromPlayer = Math.hypot(
+        playersArray[0].x - enemy.x,
+        playersArray[0].y - enemy.y
+      );
+      if (distFromPlayer - enemy.radius - playersArray[0].radius < 1) {
+        endGame();
+        ws.send(
+          JSON.stringify({
+            event: "endGame",
+            data: {
+              roomId,
+            },
+          })
+        );
+      }
     }
   }
 }
@@ -214,24 +270,46 @@ addEventListener("click", (event) => {
 
   if (multiplayer) {
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(
-        JSON.stringify({
-          event: "fireBullet",
-          data: {
-            playerId,
-            roomId,
-            x: innerWidth / 2 - 50,
-            y: innerHeight / 2,
-            radius: 5,
-            velocity,
-          },
-        })
-      );
+      if (playerNumber === 1) {
+        ws.send(
+          JSON.stringify({
+            event: "fireBullet",
+            data: {
+              playerId,
+              roomId,
+              x: innerWidth / 2 + 50,
+              y: innerHeight / 2,
+              radius: 5,
+              velocity,
+            },
+          })
+        );
+      } else {
+        ws.send(
+          JSON.stringify({
+            event: "fireBullet",
+            data: {
+              playerId,
+              roomId,
+              x: innerWidth / 2 - 50,
+              y: innerHeight / 2,
+              radius: 5,
+              velocity,
+            },
+          })
+        );
+      }
     }
 
-    bulletsArray.push(
-      new Bullet(innerWidth / 2 + 50, innerHeight / 2, 5, velocity, ctx)
-    );
+    if (playerNumber === 1) {
+      bulletsArray.push(
+        new Bullet(innerWidth / 2 + 50, innerHeight / 2, 5, velocity, ctx)
+      );
+    } else {
+      bulletsArray.push(
+        new Bullet(innerWidth / 2 - 50, innerHeight / 2, 5, velocity, ctx)
+      );
+    }
   } else {
     bulletsArray.push(
       new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx)
@@ -254,12 +332,9 @@ singlePlayerBtn.addEventListener("click", () => {
 
 multiPlayerBtn.addEventListener("click", () => {
   multiplayer = true;
-  createPlayer();
-  updateGameColors();
   setCanvasSize(canvas, ctx);
-  init();
-  animate(true);
-  gameModal.style.display = "none";
+  wonElement.style.display = "none";
+  lostElement.style.display = "none";
 
   ws = new WebSocket("ws://localhost:8080/game");
   ws.onopen = () => {
@@ -275,14 +350,32 @@ multiPlayerBtn.addEventListener("click", () => {
     );
   };
 
+  ws.onclose = () => {
+    ws.send(
+      JSON.stringify({
+        event: "endGame",
+        data: {
+          playerId,
+          roomId,
+        },
+      })
+    );
+  };
+
   ws.onmessage = (event) => {
     const message = JSON.parse(event.data);
     switch (message.event) {
       case "start": {
         const data = message.data;
-
         playerId = data.player.id;
         roomId = data.player.roomId;
+        playerNumber = data.player.number;
+        createPlayer();
+        updateGameColors();
+        init();
+        animate(true);
+        gameModal.style.display = "none";
+
         break;
       }
 

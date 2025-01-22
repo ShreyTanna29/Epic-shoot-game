@@ -142,12 +142,7 @@ export class Store {
 
   endGame(playerDetails: EndGameDto) {
     const room = this.rooms.find((room) => room.id === playerDetails.roomId); // finding room
-    this.rooms = this.rooms.filter((room) => room.id === playerDetails.roomId); // removing room from rooms array
     clearInterval(room.intervalId); // clearing enemies interval id, so enemy generation gets stopped
-    if (room.player1Details.id === playerDetails.playerId) {
-      room.player2Client.send(JSON.stringify({ event: 'WIN' }));
-    } else {
-      room.player1Client.send(JSON.stringify({ event: 'WIN' }));
-    }
+    this.rooms = this.rooms.filter((room) => room.id === playerDetails.roomId); // removing room from rooms array
   }
 }
