@@ -7,7 +7,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve --open",
-    "start": "node dist/script.js"
+    "start": "webpack serve --mode production"
   },
   "author": "Shrey Tanna",
   "license": "ISC",
