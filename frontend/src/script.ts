@@ -336,7 +336,7 @@ multiPlayerBtn.addEventListener("click", () => {
   wonElement.style.display = "none";
   lostElement.style.display = "none";
 
-  ws = new WebSocket("ws://localhost:8080/game");
+  ws = new WebSocket(process.env.SOCKET_URL || "localhost:8080/game");
   ws.onopen = () => {
     ws.send(
       JSON.stringify({
