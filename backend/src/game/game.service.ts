@@ -3,7 +3,6 @@ import { Store } from 'src/store/store';
 import { Player } from 'src/types/player.type';
 import { WebSocket } from 'ws';
 import { InitGameDto } from './dto/init-game.dto';
-import { HitEnemyDto } from './dto/hit-enemy.dto';
 import { EndGameDto } from './dto/end-game.dto';
 import { FireBulletDto } from './dto/fire-bullet.dto';
 
@@ -68,14 +67,6 @@ export class GameService {
 
       this.instance.sendEnemies(roomId);
     }
-  }
-
-  hitEnemy(hitDetails: HitEnemyDto) {
-    this.instance.hitEnemy(
-      hitDetails.roomId,
-      hitDetails.enemyId,
-      hitDetails.playerId,
-    );
   }
 
   fireBullet(bulletDetails: FireBulletDto) {

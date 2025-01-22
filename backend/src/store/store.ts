@@ -82,30 +82,6 @@ export class Store {
     currentRoom.intervalId = intervalId;
   }
 
-  hitEnemy(roomId: number, enemyId: number, playerId: number) {
-    const currentRoom = this.rooms.find((room) => room.id === roomId);
-    const targetEnemy: Enemy = this.enemies.find(
-      (enemy) => enemy.id === enemyId,
-    );
-    console.log('enemy: ', targetEnemy);
-    const receiver =
-      currentRoom.player1Details.id === playerId
-        ? currentRoom.player2Client
-        : currentRoom.player1Client;
-
-    if (targetEnemy.radius - 5 >= 10) {
-      targetEnemy.radius -= 5;
-      receiver.send(
-        JSON.stringify({ event: 'reduceEnemy', data: { enemyId } }),
-      );
-    } else {
-      this.enemies = this.enemies.filter((enemy) => enemy.id !== enemyId);
-      receiver.send(
-        JSON.stringify({ event: 'removeEnemy', data: { enemyId } }),
-      );
-    }
-  }
-
   fireBullet(bulletDetails: FireBulletDto) {
     const room = this.rooms.find((room) => room.id === bulletDetails.roomId);
 

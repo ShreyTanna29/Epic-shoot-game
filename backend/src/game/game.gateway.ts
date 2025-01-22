@@ -7,7 +7,6 @@ import {
 import { Server, WebSocket } from 'ws';
 import { GameService } from './game.service';
 import { InitGameDto } from './dto/init-game.dto';
-import { HitEnemyDto } from './dto/hit-enemy.dto';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WebSocketExceptionFilter } from 'src/exceptionFilters/WsException.filter';
 import { EndGameDto } from './dto/end-game.dto';
@@ -55,24 +54,6 @@ export class GameGateway {
 
   afterInit() {
     console.log('wss connected');
-  }
-
-  /*  
-  DATA STRUCTURE OF HITENEMY MESSAGE
-
-  {
-  "event": "hitEnemy",
-  "data": {
-  "playerId": id of player,
-  "enemyId": id of enemy,
-  "roomId": id of room
-  }
-  }
-  
-  */
-  @SubscribeMessage('hitEnemy')
-  handleHitEnemy(client: WebSocket, payload: HitEnemyDto) {
-    this.gameService.hitEnemy(payload);
   }
 
   @SubscribeMessage('fireBullet')
