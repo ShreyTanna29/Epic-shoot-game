@@ -2,6 +2,8 @@
 
 [Screencast from 2024-12-20 11-40-52.webm](https://github.com/user-attachments/assets/ab0eb060-8f96-4bab-9f04-7922c063232d)
 
+## NOTE
+Project is under development, many features are yet to come, this is just a MVP.
 
 # What our players say about the game
 
@@ -29,4 +31,4 @@ Don't forget to star the repo ⭐
 # Play it
 
 "GO and play this game right now, it's an order" - Kim Jong Un, after realising that you haven't played this game yet. <br>
-https://epic-shoot-game.vercel.app
+https://epic-shoot.onrender.com
