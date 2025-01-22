@@ -9,11 +9,22 @@ const ctx = canvas.getContext("2d", {
 }) as CanvasRenderingContext2D;
 const scoreElement = document.getElementById("scoreElement") as HTMLSpanElement;
 const gameModal = document.getElementById("gameModal") as HTMLDivElement;
-const startBtn = document.getElementById("startBtn") as HTMLButtonElement;
+const singlePlayerBtn = document.getElementById(
+  "singlePlayer"
+) as HTMLButtonElement;
+const multiPlayerBtn = document.getElementById(
+  "multiPlayer"
+) as HTMLButtonElement;
 const endScore = document.getElementById("endScore") as HTMLHeadingElement;
 const darkModeToggle = document.getElementById(
   "darkModeToggle"
 ) as HTMLButtonElement;
+const wonElement = document.getElementById(
+  "wonElement"
+) as HTMLParagraphElement;
+const lostElement = document.getElementById(
+  "lostElement"
+) as HTMLParagraphElement;
 
 addEventListener("resize", () => {
   setCanvasSize(canvas, ctx);
@@ -37,28 +48,39 @@ darkModeToggle.addEventListener("click", () => {
   // Save preference
   if (document.documentElement.classList.contains("dark")) {
     localStorage.theme = "dark";
-    player.color = "#ffffff"; // White color for player in dark mode
+    playersArray[0].color = "#ffffff"; // White color for player in dark mode
+    if (multiplayer) playersArray[1].color = "#ffffff"; // White color for player in dark mode
   } else {
     localStorage.theme = "light";
-    player.color = "#000000"; // Black color for player in light mode
+    playersArray[0].color = "#000000"; // Black color for player in light mode
+    if (multiplayer) playersArray[1].color = "#000000"; // Black color for player in light mode
   }
 });
 
 let bulletsArray: Bullet[] = [];
 let enemiesArray: Enemy[] = [];
 let particlesArray: Particle[] = [];
+let playersArray: Player[] = [];
 let spawnEnemyIntervalId: () => void;
+let multiplayer = false;
+let ws: WebSocket;
+let playerId: number;
+let roomId: number;
+let playerNumber: number;
 
 //all functions
 function updateGameColors() {
   const isDark = document.documentElement.classList.contains("dark");
-  player.color = isDark ? "#ffffff" : "#000000";
+  playersArray[0].color = isDark ? "#ffffff" : "#000000";
+  if (multiplayer) playersArray[1].color = isDark ? "#ffffff" : "#000000";
 }
 function init() {
   bulletsArray = [];
   enemiesArray = [];
   particlesArray = [];
   scoreElement.innerHTML = String(0);
+  wonElement.style.display = "none";
+  lostElement.style.display = "none";
   if (spawnEnemyIntervalId) spawnEnemyIntervalId();
 }
 
@@ -70,18 +92,49 @@ function endGame() {
 }
 
 // invoking player class
-const player = new Player(innerWidth / 2, innerHeight / 2, 10, "white", ctx);
-player.draw();
+function createPlayer() {
+  if (multiplayer) {
+    playersArray[0] = new Player(
+      innerWidth / 2 + 50,
+      innerHeight / 2,
+      10,
+      "white",
+      ctx
+    );
+
+    playersArray[0].draw();
+
+    playersArray[1] = new Player(
+      innerWidth / 2 - 50,
+      innerHeight / 2,
+      10,
+      "white",
+      ctx
+    );
+    playersArray[1].draw();
+  } else {
+    playersArray[0] = new Player(
+      innerWidth / 2,
+      innerHeight / 2,
+      10,
+      "white",
+      ctx
+    );
+    playersArray[0].draw();
+  }
+}
 
 //animating
 let animationId: number;
 let score = String(0);
-function animate() {
-  animationId = requestAnimationFrame(animate);
+function animate(multiPlayer: boolean) {
+  animationId = requestAnimationFrame(() => animate(multiPlayer));
   const isDark = document.documentElement.classList.contains("dark");
   ctx.fillStyle = isDark ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  player.draw();
+  playersArray[0].draw();
+  if (multiPlayer) playersArray[1].draw();
+
   bulletsArray.forEach((eachBullet) => eachBullet.update());
 
   particlesArray.forEach((particle, index) => {
@@ -146,9 +199,59 @@ function animate() {
     }
 
     // End game if enemy hits player
-    const distFromPlayer = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-    if (distFromPlayer - enemy.radius - player.radius < 1) {
-      endGame();
+    if (multiPlayer) {
+      const distFromPlayer1 = Math.hypot(
+        playersArray[0].x - enemy.x,
+        playersArray[0].y - enemy.y
+      );
+
+      const distFromPlayer2 = Math.hypot(
+        playersArray[1].x - enemy.x,
+        playersArray[1].y - enemy.y
+      );
+
+      if (distFromPlayer1 - enemy.radius - playersArray[0].radius < 1) {
+        endGame();
+        if (playerNumber === 1) {
+          lostElement.style.display = "block";
+        } else {
+          wonElement.style.display = "block";
+        }
+
+        ws.send(
+          JSON.stringify({
+            event: "endGame",
+            data: {
+              roomId,
+            },
+          })
+        );
+      }
+
+      if (distFromPlayer2 - enemy.radius - playersArray[1].radius < 1) {
+        endGame();
+        if (playerNumber === 1) {
+          lostElement.style.display = "block";
+        } else {
+          wonElement.style.display = "block";
+        }
+      }
+    } else {
+      const distFromPlayer = Math.hypot(
+        playersArray[0].x - enemy.x,
+        playersArray[0].y - enemy.y
+      );
+      if (distFromPlayer - enemy.radius - playersArray[0].radius < 1) {
+        endGame();
+        ws.send(
+          JSON.stringify({
+            event: "endGame",
+            data: {
+              roomId,
+            },
+          })
+        );
+      }
     }
   }
 }
@@ -165,22 +268,139 @@ addEventListener("click", (event) => {
     y: Math.sin(angle) * 6,
   };
 
-  bulletsArray.push(
-    new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx)
-  );
+  if (multiplayer) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      if (playerNumber === 1) {
+        ws.send(
+          JSON.stringify({
+            event: "fireBullet",
+            data: {
+              playerId,
+              roomId,
+              x: innerWidth / 2 + 50,
+              y: innerHeight / 2,
+              radius: 5,
+              velocity,
+            },
+          })
+        );
+      } else {
+        ws.send(
+          JSON.stringify({
+            event: "fireBullet",
+            data: {
+              playerId,
+              roomId,
+              x: innerWidth / 2 - 50,
+              y: innerHeight / 2,
+              radius: 5,
+              velocity,
+            },
+          })
+        );
+      }
+    }
+
+    if (playerNumber === 1) {
+      bulletsArray.push(
+        new Bullet(innerWidth / 2 + 50, innerHeight / 2, 5, velocity, ctx)
+      );
+    } else {
+      bulletsArray.push(
+        new Bullet(innerWidth / 2 - 50, innerHeight / 2, 5, velocity, ctx)
+      );
+    }
+  } else {
+    bulletsArray.push(
+      new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx)
+    );
+  }
 });
 
 // start game
-startBtn.addEventListener("click", () => {
+singlePlayerBtn.addEventListener("click", () => {
+  multiplayer = false;
+  createPlayer();
   updateGameColors();
   setCanvasSize(canvas, ctx);
   init();
-  animate();
+  animate(false);
   const intervalId = spawnEnemies(canvas, enemiesArray, ctx);
   spawnEnemyIntervalId = intervalId;
   gameModal.style.display = "none";
 });
 
+multiPlayerBtn.addEventListener("click", () => {
+  multiplayer = true;
+  setCanvasSize(canvas, ctx);
+  wonElement.style.display = "none";
+  lostElement.style.display = "none";
+
+  ws = new WebSocket("ws://localhost:8080/game");
+  ws.onopen = () => {
+    ws.send(
+      JSON.stringify({
+        event: "init",
+        data: {
+          name: "abv",
+          canvasWidth: innerWidth,
+          canvasHeight: innerHeight,
+        },
+      })
+    );
+  };
+
+  ws.onclose = () => {
+    ws.send(
+      JSON.stringify({
+        event: "endGame",
+        data: {
+          playerId,
+          roomId,
+        },
+      })
+    );
+  };
+
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    switch (message.event) {
+      case "start": {
+        const data = message.data;
+        playerId = data.player.id;
+        roomId = data.player.roomId;
+        playerNumber = data.player.number;
+        createPlayer();
+        updateGameColors();
+        init();
+        animate(true);
+        gameModal.style.display = "none";
+
+        break;
+      }
+
+      case "createEnemy": {
+        const data = message.data.enemy;
+        let velocity = {
+          x: Math.cos(data.angle) * 2,
+          y: Math.sin(data.angle) * 2,
+        };
+        enemiesArray.push(
+          new Enemy(data.x, data.y, data.radius, data.color, velocity, ctx)
+        );
+        break;
+      }
+
+      case "fireBullet": {
+        const data = message.data.bullet;
+        bulletsArray.push(
+          new Bullet(data.x, data.y, data.radius, data.velocity, ctx)
+        );
+        break;
+      }
+    }
+  };
+});
 // handling screen resize
 addEventListener("resize", () => {
   location.reload();
