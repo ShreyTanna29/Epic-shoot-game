@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="./favicon.png" type="image/x-icon" />
+    <title>Shooter Game</title>
+  </head>
+  <body class="bg-white dark:bg-black w-full">
+    <!-- top score bar -->
+    <div
+      class="fixed text-black dark:text-white w-full flex items-center justify-between text-sm select-none pt-2 px-4"
+    >
+      <div class="flex items-center">
+        <span>Score: </span>
+        <span id="scoreElement" class="ml-1">0</span>
+      </div>
+
+      <button
+        id="darkModeToggle"
+        class="px-4 py-2 bg-green-500/10 rounded-lg dark:bg-white/10 z-50"
+      >
+        <span class="dark:hidden">
+          <!-- moon svg -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-moon"
+          >
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </span>
+        <span class="hidden dark:inline">
+          <!-- sun svg -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-sun"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    <!-- score modal -->
+    <div
+      class="fixed inset-0 backdrop-blur-sm flex items-center justify-center select-none"
+      id="gameModal"
+    >
+      <div
+        class="backdrop-blur-md text-black bg-green-500/10 dark:text-white dark:bg-white/10 max-w-md w-full p-12 rounded-lg text-center"
+      >
+        <h1 class="text-7xl leading-none font-bold" id="endScore">0</h1>
+        <p class="mb-4 text-sm text-gray-800 dark:text-gray-300">Points</p>
+        <div>
+          <button
+            class="w-full rounded-full bg-green-500/50 dark:bg-black/50 p-3"
+            id="startBtn"
+          >
+            Start Game
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+      tailwind.config = {
+        darkMode: ["class"],
+      };
+    </script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+      integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script type="module" src="./bundle.js"></script>
+  </body>
+</html>
