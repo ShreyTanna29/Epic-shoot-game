@@ -13,6 +13,10 @@ import { EndGameDto } from './dto/end-game.dto';
 import { FireBulletDto } from './dto/fire-bullet.dto';
 
 @WebSocketGateway({
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  },
   path: '/game',
 })
 @UsePipes(
