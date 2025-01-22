@@ -3,7 +3,7 @@ const Dotenv = require("dotenv-webpack");
 const path = require("path");
 
 module.exports = {
-  plugins: [new Dotenv()],
+  plugins: [new Dotenv({ systemvars: true })],
   entry: "./src/script.ts",
   module: {
     rules: [
