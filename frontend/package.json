@@ -13,7 +13,8 @@
   "author": "Shrey Tanna",
   "license": "ISC",
   "dependencies": {
-    "gsap": "^3.12.5"
+    "gsap": "^3.12.5",
+    "styled-components": "^6.1.14"
   },
   "devDependencies": {
     "dotenv-webpack": "^8.1.0",
