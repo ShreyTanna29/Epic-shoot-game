@@ -63,7 +63,7 @@ let particlesArray: Particle[] = [];
 let playersArray: Player[] = [];
 let spawnEnemyIntervalId: () => void;
 let multiplayer = false;
-let ws: WebSocket;
+let ws: WebSocket | null;
 let playerId: number;
 let roomId: number;
 let playerNumber: number;
@@ -217,15 +217,16 @@ function animate(multiPlayer: boolean) {
         } else {
           wonElement.style.display = "block";
         }
-
-        ws.send(
-          JSON.stringify({
-            event: "endGame",
-            data: {
-              roomId,
-            },
-          })
-        );
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(
+            JSON.stringify({
+              event: "endGame",
+              data: {
+                roomId,
+              },
+            })
+          );
+        }
       }
 
       if (distFromPlayer2 - enemy.radius - playersArray[1].radius < 1) {
@@ -243,14 +244,16 @@ function animate(multiPlayer: boolean) {
       );
       if (distFromPlayer - enemy.radius - playersArray[0].radius < 1) {
         endGame();
-        ws.send(
-          JSON.stringify({
-            event: "endGame",
-            data: {
-              roomId,
-            },
-          })
-        );
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(
+            JSON.stringify({
+              event: "endGame",
+              data: {
+                roomId,
+              },
+            })
+          );
+        }
       }
     }
   }
@@ -331,6 +334,11 @@ singlePlayerBtn.addEventListener("click", () => {
 });
 
 multiPlayerBtn.addEventListener("click", () => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.close();
+    ws = null;
+  }
+
   multiplayer = true;
   setCanvasSize(canvas, ctx);
   wonElement.style.display = "none";
@@ -338,28 +346,31 @@ multiPlayerBtn.addEventListener("click", () => {
 
   ws = new WebSocket(process.env.SOCKET_URL!);
   ws.onopen = () => {
-    ws.send(
-      JSON.stringify({
-        event: "init",
-        data: {
-          name: "abv",
-          canvasWidth: innerWidth,
-          canvasHeight: innerHeight,
-        },
-      })
-    );
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          event: "init",
+          data: {
+            name: "abv",
+            canvasWidth: innerWidth,
+            canvasHeight: innerHeight,
+          },
+        })
+      );
+    }
   };
 
   ws.onclose = () => {
-    ws.send(
-      JSON.stringify({
-        event: "endGame",
-        data: {
-          playerId,
-          roomId,
-        },
-      })
-    );
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          event: "endGame",
+          data: {
+            roomId,
+          },
+        })
+      );
+    }
   };
 
   ws.onmessage = (event) => {
