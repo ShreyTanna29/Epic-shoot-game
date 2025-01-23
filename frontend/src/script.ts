@@ -231,7 +231,7 @@ function animate(multiPlayer: boolean) {
 
       if (distFromPlayer2 - enemy.radius - playersArray[1].radius < 1) {
         endGame();
-        if (playerNumber === 1) {
+        if (playerNumber === 2) {
           lostElement.style.display = "block";
         } else {
           wonElement.style.display = "block";
