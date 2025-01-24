@@ -22,8 +22,9 @@ function App() {
   }, [canvas]);
 
   useEffect(() => {
+    if (!ctx) return
 
-    const bulletEventListener = (event) => {
+    const bulletEventListener = (event: MouseEvent) => {
       if (!ctx) return
 
       const angle = Math.atan2(
@@ -70,15 +71,12 @@ function App() {
         }
 
         if (playerNumber === 1) {
-          bulletsArray.push(
-            new Bullet(innerWidth / 2 + 50, innerHeight / 2, 5, velocity, ctx!)
-          );
+          setBulletsArray(prev => [...prev, new Bullet(innerWidth / 2 + 50, innerHeight / 2, 5, velocity, ctx!)])
         } else {
-          bulletsArray.push(
-            new Bullet(innerWidth / 2 - 50, innerHeight / 2, 5, velocity, ctx!)
-          );
+          setBulletsArray(prev => [...prev, new Bullet(innerWidth / 2 - 50, innerHeight / 2, 5, velocity, ctx!)])
         }
       } else {
+
         bulletsArray.push(
           new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx!)
         );
@@ -97,15 +95,17 @@ function App() {
   const wonElement = useRef<HTMLParagraphElement>(null)
   const lostElement = useRef<HTMLParagraphElement>(null)
 
-  if (
-    localStorage.theme === "dark" ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
+  useEffect(() => {
+    if (
+      localStorage.theme === "dark" ||
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  })
 
   const darkModeToggle = () => {
     document.documentElement.classList.toggle("dark");
@@ -137,6 +137,14 @@ function App() {
     setBulletsArray([]);
     setEnemiesArray([]);
     setParticlesArray([]);
+    setPlayersArray([])
+    console.log(bulletsArray);
+    console.log(enemiesArray);
+    console.log(particlesArray);
+    console.log(playersArray);
+
+
+
     if (scoreElement.current) scoreElement.current.innerHTML = String(0);
     if (wonElement.current) wonElement.current.style.display = "none";
     if (lostElement.current) lostElement.current.style.display = "none";
@@ -228,7 +236,11 @@ function App() {
           bullet.y + bullet.radius < 0 ||
           bullet.y - bullet.radius > canvas.current!.height
         ) {
-          bulletsArray.splice(bIndex, 1);
+          setBulletsArray((prev) => {
+            const newArray = [...prev]
+            newArray.splice(bIndex, 1)
+            return newArray
+          })
           continue;
         }
 
@@ -258,10 +270,14 @@ function App() {
             gsap.to(enemy, {
               radius: enemy.radius - 5,
             });
-            bulletsArray.splice(bIndex, 1);
+            bulletsArray.splice(bIndex, 1)
           } else {
             enemiesArray.splice(eIndex, 1);
-            bulletsArray.splice(bIndex, 1);
+            setBulletsArray(prev => {
+              const newArray = [...prev]
+              newArray.splice(bIndex, 1)
+              return newArray
+            })
           }
         }
       }
@@ -411,9 +427,7 @@ function App() {
 
         case "fireBullet": {
           const data = message.data.bullet;
-          bulletsArray.push(
-            new Bullet(data.x, data.y, data.radius, data.velocity, ctx!)
-          );
+          setBulletsArray(prev => [...prev, new Bullet(data.x, data.y, data.radius, data.velocity, ctx!)])
           break;
         }
       }
