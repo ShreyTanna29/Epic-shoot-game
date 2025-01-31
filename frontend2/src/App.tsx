@@ -3,8 +3,8 @@ import { setCanvasSize } from "./utils/canvasSize";
 import spawnEnemies from "./gameLogic/spawnEnemies";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-function App() {
 
+function App() {
   enum multiPlayerLoadingInterface {
     Server = "connecting to server",
     Player = "connecting to player",
