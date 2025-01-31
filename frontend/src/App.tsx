@@ -93,7 +93,7 @@ function App() {
     }
     window.addEventListener("click", (event) => bulletEventListener(event))
     return window.removeEventListener("click", bulletEventListener)
-  }, [ctx, multiplayer, bulletsArray])
+  }, [ctx, bulletsArray])
 
   const gameModal = useRef<HTMLDivElement>(null)
   const endScore = useRef<HTMLHeadingElement>(null)
