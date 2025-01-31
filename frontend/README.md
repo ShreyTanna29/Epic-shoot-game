@@ -1,32 +1,50 @@
-## EPIC SHOOT LIKE NO OTHER.
+# React + TypeScript + Vite
 
-[Screencast from 2024-12-20 11-40-52.webm](https://github.com/user-attachments/assets/ab0eb060-8f96-4bab-9f04-7922c063232d)
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+Currently, two official plugins are available:
 
-# What our players say about the game
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- "I haven't played this much fun game from centuries" - Steve Jobs, 29 FEB, 1985.
-- "So much fun and relaxsation, wish I could kiss the hands of developer" - Bill Gates, just after steve jobs said above line.
-- "Wish I could hire developer of this game but I can't afford him." - Elon Musk, after failure of falcon 3.
-- "It's so fun to play this game, wish developers at Apple could create something like this, but they aren't skilled enough" - Tim Cook, I don't remember when he said this.
-- "Finally, a game worth breaking the time-space continuum for." - Albert Einstein, probably before inventing time travel.
-- "If this is what the future holds, I’m glad I made electricity." - Nikola Tesla, after unlocking the plasma cannon.
+## Expanding the ESLint configuration
 
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-# Built with
+- Configure the top-level `parserOptions` property like this:
 
-Find out yourself, if you are a real develpoer.
-<br>
-<br>
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
 
-# Chill and enjoy
-It's a fun game and a fun readme, so just take a chill pill.
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-Made with love ❤️ by Shrey Tanna
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
 
-Don't forget to star the repo ⭐ 
-
-# Play it
-
-"GO and play this game right now, it's an order" - Kim Jong Un, after realising that you haven't played this game yet. <br>
-https://epic-shoot-game.vercel.app
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```

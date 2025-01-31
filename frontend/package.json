@@ -1,26 +1,36 @@
 {
-  "name": "shooter-game",
-  "version": "1.0.0",
-  "description": "[Screencast from 2024-12-20 11-40-52.webm](https://github.com/user-attachments/assets/ab0eb060-8f96-4bab-9f04-7922c063232d)",
-  "main": "dist/script.js",
+  "name": "frontend2",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "webpack --mode production",
-    "dev": "webpack serve --open",
-    "start": "webpack serve --mode production",
-    "preinstall": "npm install -g webpack-cli"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "author": "Shrey Tanna",
-  "license": "ISC",
   "dependencies": {
-    "gsap": "^3.12.5"
+    "@reduxjs/toolkit": "^2.5.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "gsap": "^3.12.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.1.3",
+    "tailwindcss": "^4.0.0",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "dotenv-webpack": "^8.1.0",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.7.3",
-    "webpack": "^5.97.1",
-    "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0"
+    "@eslint/js": "^9.13.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.11.0",
+    "vite": "^5.4.10"
   }
 }

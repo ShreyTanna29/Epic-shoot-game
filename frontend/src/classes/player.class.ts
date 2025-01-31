@@ -4,6 +4,7 @@ export class Player {
   public y: number;
   public radius: number;
   public color: string;
+  public id: number;
 
   constructor(
     x: number,
@@ -17,6 +18,7 @@ export class Player {
     this.y = y;
     this.radius = radius;
     this.color = color;
+    this.id = crypto.getRandomValues(new Uint32Array(1))[0];
   }
 
   draw() {
