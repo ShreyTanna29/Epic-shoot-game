@@ -11,7 +11,7 @@ export default function spawnEnemies(
   function spawn() {
     const currentTime = Date.now();
     if (currentTime - lastSpawnTime >= spawnDelay) {
-      let radius = Math.random() * (25 - 8) + 8;
+      const radius = Math.random() * (25 - 8) + 8;
       let x, y;
 
       if (Math.random() < 0.5) {
@@ -22,9 +22,9 @@ export default function spawnEnemies(
         y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
       }
 
-      let color = `hsl(${Math.random() * 360},50%,50%)`;
-      let angle = Math.atan2(innerHeight / 2 - y, innerWidth / 2 - x);
-      let velocity = {
+      const color = `hsl(${Math.random() * 360},50%,50%)`;
+      const angle = Math.atan2(innerHeight / 2 - y, innerWidth / 2 - x);
+      const velocity = {
         x: Math.cos(angle) * 2,
         y: Math.sin(angle) * 2,
       };
