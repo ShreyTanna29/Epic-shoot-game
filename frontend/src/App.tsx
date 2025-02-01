@@ -3,12 +3,16 @@ import { setCanvasSize } from "./utils/canvasSize";
 import spawnEnemies from "./gameLogic/spawnEnemies";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   enum multiPlayerLoadingInterface {
     Server = "connecting to server",
     Player = "connecting to player",
   }
+
+  const navigate = useNavigate()
 
   const [bulletsArray, setBulletsArray] = useState<Bullet[]>([])
   const [enemiesArray, setEnemiesArray] = useState<Enemy[]>([])
@@ -32,6 +36,34 @@ function App() {
       if (context) setCtx(context);
     }
   }, [canvas]);
+
+  useEffect(() => {
+    switch (localStorage.theme) {
+      case 'light': {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark')
+        }
+        break;
+      }
+      case 'dark': {
+        if (!document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.add('dark')
+        }
+        break;
+      }
+      case 'system': {
+        if (window.matchMedia("(prefers-color-scheme: dark)")) {
+          if (!document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.add('dark')
+          }
+        } else {
+          if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark')
+          }
+        }
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const bulletEventListener = (event: MouseEvent) => {
@@ -100,30 +132,6 @@ function App() {
   const wonElement = useRef<HTMLParagraphElement>(null)
   const lostElement = useRef<HTMLParagraphElement>(null)
 
-  if (
-    localStorage.theme === "dark" ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
-  const darkModeToggle = () => {
-    document.documentElement.classList.toggle("dark");
-    // Save preference
-    if (document.documentElement.classList.contains("dark")) {
-      localStorage.theme = "dark";
-      playersArray[0].color = "#ffffff"; // White color for player in dark mode
-      if (multiplayer) playersArray[1].color = "#ffffff"; // White color for player in dark mode
-    } else {
-      localStorage.theme = "light";
-      playersArray[0].color = "#000000"; // Black color for player in light mode
-      if (multiplayer) playersArray[1].color = "#000000"; // Black color for player in light mode
-    }
-  }
-
-
   function updateGameColors() {
     const isDark = document.documentElement.classList.contains("dark");
     playersArray[0].color = isDark ? "#ffffff" : "#000000";
@@ -172,7 +180,7 @@ function App() {
         playersArray[0] = new Player(
           innerWidth / 2,
           innerHeight / 2,
-          10,
+          30,
           "white",
           ctx!
         );
@@ -194,8 +202,7 @@ function App() {
     const isDark = document.documentElement.classList.contains("dark");
     ctx!.fillStyle = isDark ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)";
     ctx!.fillRect(0, 0, canvas.current!.width, canvas.current!.height);
-    playersArray[0].draw();
-    if (multiplayer) playersArray[1].draw();
+
     bulletsArray.forEach((eachBullet) => eachBullet.update());
     particlesArray.forEach((particle, index) => {
       if (particle.opacity <= 0) {
@@ -204,6 +211,8 @@ function App() {
         particle.update();
       }
     });
+    playersArray[0].draw();
+    if (multiplayer) playersArray[1].draw();
     for (let eIndex = enemiesArray.length - 1; eIndex >= 0; eIndex--) {
       const enemy = enemiesArray[eIndex];
       enemy.update();
@@ -406,54 +415,6 @@ function App() {
           <span>Score: </span>
           <span id="scoreElement" className="ml-1">{score}</span>
         </div>
-        <button
-          id="darkModeToggle"
-          onClick={() => darkModeToggle()}
-          className="px-4 py-2 bg-green-500/10 rounded-lg dark:bg-white/10 z-50"
-        >
-          <span className="dark:hidden">
-            {/* <!-- moon svg --> */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-moon"
-            >
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-            </svg>
-          </span>
-          <span className="hidden dark:inline">
-            {/* <!-- sun svg --> */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-sun"
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2" />
-              <path d="M12 20v2" />
-              <path d="m4.93 4.93 1.41 1.41" />
-              <path d="m17.66 17.66 1.41 1.41" />
-              <path d="M2 12h2" />
-              <path d="M20 12h2" />
-              <path d="m6.34 17.66-1.41 1.41" />
-              <path d="m19.07 4.93-1.41 1.41" />
-            </svg>
-          </span>
-        </button>
       </div>
       {/* <!-- score modal --> */}
       <div
@@ -464,6 +425,7 @@ function App() {
         <div
           className="backdrop-blur-md text-black bg-green-500/10 dark:text-white dark:bg-white/10 max-w-md w-full p-12 rounded-lg text-center"
         >
+          <Settings className="ml-auto cursor-pointer" onClick={() => navigate('/settings')} />
           <h1 className="text-7xl leading-none font-bold" id="endScore">{score}</h1>
           <p className="mb-4 text-sm text-gray-800 dark:text-gray-300">Points</p>
           <p className="text-red-500 text-xl hidden" ref={lostElement} id="lostElement">YOU LOST</p>
