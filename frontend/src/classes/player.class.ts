@@ -1,4 +1,3 @@
-import playerAvatar from "../assets/avatars/a1.png";
 export class Player {
   private ctx: CanvasRenderingContext2D;
   public x: number;
@@ -13,7 +12,8 @@ export class Player {
     y: number,
     radius: number,
     color: string,
-    ctx: CanvasRenderingContext2D
+    ctx: CanvasRenderingContext2D,
+    avatarImage: string
   ) {
     this.ctx = ctx;
     this.x = x;
@@ -22,7 +22,7 @@ export class Player {
     this.color = color;
     this.id = crypto.getRandomValues(new Uint32Array(1))[0];
     this.avatar = new Image();
-    this.avatar.src = playerAvatar;
+    this.avatar.src = avatarImage;
   }
 
   draw() {

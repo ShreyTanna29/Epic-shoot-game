@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { a1 } from "./assets/avatars";
 
 function App() {
   enum multiPlayerLoadingInterface {
@@ -125,7 +126,7 @@ function App() {
     }
     window.addEventListener("click", (event) => bulletEventListener(event))
     return window.removeEventListener("click", bulletEventListener)
-  }, [ctx, bulletsArray])
+  })
 
   const gameModal = useRef<HTMLDivElement>(null)
   const endScore = useRef<HTMLHeadingElement>(null)
@@ -160,18 +161,20 @@ function App() {
         playersArray[0] = new Player(
           innerWidth / 2 + 50,
           innerHeight / 2,
-          10,
+          30,
           "white",
-          ctx!
+          ctx!,
+          localStorage.avatar || a1
         );
       }
       if (!playersArray[1]) {
         playersArray[1] = new Player(
           innerWidth / 2 - 50,
           innerHeight / 2,
-          10,
+          30,
           "white",
-          ctx!
+          ctx!,
+          localStorage.avatar || a1
         );
       }
     } else {
@@ -182,7 +185,8 @@ function App() {
           innerHeight / 2,
           30,
           "white",
-          ctx!
+          ctx!,
+          localStorage.avatar || a1
         );
       }
     }
