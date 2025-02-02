@@ -5,7 +5,6 @@ import { useEffect } from "react"
 import gsap from "gsap"
 
 export default function Landing() {
-
     useEffect(() => {
         gsap.to('.slideRight', {
             opacity: 1,
@@ -29,7 +28,7 @@ export default function Landing() {
     }, [])
 
     return (
-        <div className="w-full h-[100svh] relative">
+        <div className="w-full h-[100svh] relative bg-black">
             <div className='w-full h-full absolute '>
                 <img src={gameImg} alt="Loading..." className="object-cover w-full h-full opacity-0  opacityAnimation4" />
             </div>
