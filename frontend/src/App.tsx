@@ -15,6 +15,7 @@ function App() {
 
   const navigate = useNavigate()
 
+  //states
   const [bulletsArray, setBulletsArray] = useState<Bullet[]>([])
   const [enemiesArray, setEnemiesArray] = useState<Enemy[]>([])
   const [particlesArray, setParticlesArray] = useState<Particle[]>([])
@@ -22,14 +23,22 @@ function App() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [multiplayerLoading, setMultiplayerLoading] = useState<multiPlayerLoadingInterface | null>(null)
   const [score, setScore] = useState(0)
+  const [roomId, setRoomId] = useState(0)
+  const [playerId, setPlayerId] = useState(0)
+  const [playerNumber, setPlayerNumber] = useState(0)
+
+  // refs
+  const wsRef = useRef<WebSocket | null>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
-  let multiplayer: boolean;
+  const gameModal = useRef<HTMLDivElement>(null)
+  const endScore = useRef<HTMLHeadingElement>(null)
+  const wonElement = useRef<HTMLParagraphElement>(null)
+  const lostElement = useRef<HTMLParagraphElement>(null)
+
 
   let spawnEnemyIntervalId: () => void;
-  let ws: WebSocket | null;
-  const [playerId, setPlayerId] = useState(0)
-  let roomId: number;
-  let playerNumber: number;
+  let multiplayer: boolean;
+
 
   useEffect(() => {
     if (canvas.current) {
@@ -78,9 +87,9 @@ function App() {
         y: Math.sin(angle) * 6,
       };
       if (multiplayer) {
-        if (ws && ws.readyState === WebSocket.OPEN) {
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
           if (playerNumber === 1) {
-            ws.send(
+            wsRef.current.send(
               JSON.stringify({
                 event: "fireBullet",
                 data: {
@@ -94,7 +103,7 @@ function App() {
               })
             );
           } else {
-            ws.send(
+            wsRef.current.send(
               JSON.stringify({
                 event: "fireBullet",
                 data: {
@@ -125,13 +134,10 @@ function App() {
       }
     }
     window.addEventListener("click", (event) => bulletEventListener(event))
-    return window.removeEventListener("click", bulletEventListener)
-  })
+    return () => window.removeEventListener("click", bulletEventListener)
+  }, [ctx, bulletsArray, wsRef.current, playerNumber, playerId, roomId])
 
-  const gameModal = useRef<HTMLDivElement>(null)
-  const endScore = useRef<HTMLHeadingElement>(null)
-  const wonElement = useRef<HTMLParagraphElement>(null)
-  const lostElement = useRef<HTMLParagraphElement>(null)
+
 
   function updateGameColors() {
     const isDark = document.documentElement.classList.contains("dark");
@@ -161,7 +167,7 @@ function App() {
         playersArray[0] = new Player(
           innerWidth / 2 + 50,
           innerHeight / 2,
-          30,
+          innerWidth > 700 ? 30 : 20,
           "white",
           ctx!,
           localStorage.avatar || a1
@@ -171,7 +177,7 @@ function App() {
         playersArray[1] = new Player(
           innerWidth / 2 - 50,
           innerHeight / 2,
-          30,
+          innerWidth > 700 ? 30 : 20,
           "white",
           ctx!,
           localStorage.avatar || a1
@@ -183,7 +189,7 @@ function App() {
         playersArray[0] = new Player(
           innerWidth / 2,
           innerHeight / 2,
-          30,
+          innerWidth > 700 ? 30 : 20,
           "white",
           ctx!,
           localStorage.avatar || a1
@@ -281,8 +287,8 @@ function App() {
           } else {
             wonElement.current!.style.display = "block";
           }
-          if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(
               JSON.stringify({
                 event: "endGame",
                 data: {
@@ -307,8 +313,8 @@ function App() {
         );
         if (distFromPlayer - enemy.radius - playersArray[0].radius < 1) {
           endGame();
-          if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(
               JSON.stringify({
                 event: "endGame",
                 data: {
@@ -334,20 +340,19 @@ function App() {
       gameModal.current.style.display = "none";
   }
   const multiPlayerHandler = () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.close();
-      ws = null;
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.close();
+      wsRef.current = null
     }
     setMultiplayerLoading(multiPlayerLoadingInterface.Server)
     multiplayer = true
     setCanvasSize(canvas.current!, ctx!);
     wonElement.current!.style.display = "none";
     lostElement.current!.style.display = "none";
-
-    ws = new WebSocket(import.meta.env.VITE_SOCKET_URL!);
-    ws.onopen = () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(
+    wsRef.current = new WebSocket(import.meta.env.VITE_SOCKET_URL!)
+    wsRef.current.onopen = () => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(
           JSON.stringify({
             event: "init",
             data: {
@@ -361,9 +366,9 @@ function App() {
         setMultiplayerLoading(multiPlayerLoadingInterface.Player)
       }
     };
-    ws.onclose = () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(
+    wsRef.current.onclose = () => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(
           JSON.stringify({
             event: "endGame",
             data: {
@@ -373,15 +378,15 @@ function App() {
         );
       }
     };
-    ws.onmessage = (event) => {
+    wsRef.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       switch (message.event) {
         case "start": {
           setMultiplayerLoading(null)
           const data = message.data;
           setPlayerId(data.player.id)
-          roomId = data.player.roomId;
-          playerNumber = data.player.number;
+          setRoomId(data.player.roomId)
+          setPlayerNumber(data.player.number)
           createPlayer();
           updateGameColors();
           init();
