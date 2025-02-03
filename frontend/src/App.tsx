@@ -26,18 +26,16 @@ function App() {
   const [roomId, setRoomId] = useState(0)
   const [playerId, setPlayerId] = useState(0)
   const [playerNumber, setPlayerNumber] = useState(0)
+  const [gameWon, setGameWon] = useState<boolean>(false) // for multiplayer
+  const [gameLost, setGameLost] = useState<boolean>(false) // for multiplayer
 
   // refs
   const wsRef = useRef<WebSocket | null>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const gameModal = useRef<HTMLDivElement>(null)
-  const endScore = useRef<HTMLHeadingElement>(null)
-  const wonElement = useRef<HTMLParagraphElement>(null)
-  const lostElement = useRef<HTMLParagraphElement>(null)
-
+  const multiPlayerRef = useRef<boolean>()
 
   let spawnEnemyIntervalId: () => void;
-  let multiplayer: boolean;
 
 
   useEffect(() => {
@@ -45,7 +43,7 @@ function App() {
       const context = canvas.current?.getContext('2d', { antialias: true }) as CanvasRenderingContext2D
       if (context) setCtx(context);
     }
-  }, [canvas]);
+  }, []);
 
   useEffect(() => {
     switch (localStorage.theme) {
@@ -86,68 +84,56 @@ function App() {
         x: Math.cos(angle) * 6,
         y: Math.sin(angle) * 6,
       };
-      if (multiplayer) {
-        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-          if (playerNumber === 1) {
-            wsRef.current.send(
-              JSON.stringify({
-                event: "fireBullet",
-                data: {
-                  playerId,
-                  roomId,
-                  x: innerWidth / 2 + 50,
-                  y: innerHeight / 2,
-                  radius: 5,
-                  velocity,
-                },
-              })
-            );
-          } else {
-            wsRef.current.send(
-              JSON.stringify({
-                event: "fireBullet",
-                data: {
-                  playerId,
-                  roomId,
-                  x: innerWidth / 2 - 50,
-                  y: innerHeight / 2,
-                  radius: 5,
-                  velocity,
-                },
-              })
-            );
-          }
-        }
-        if (playerNumber === 1) {
+      if (multiPlayerRef.current) {
+        if (wsRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(
+            JSON.stringify({
+              event: "fireBullet",
+              data: {
+                playerId,
+                roomId,
+                x: playerNumber === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
+                y: innerHeight / 2,
+                radius: 5,
+                velocity
+              }
+            })
+          )
+
           bulletsArray.push(
-            new Bullet(innerWidth / 2 + 50, innerHeight / 2, 5, velocity, ctx!)
+            new Bullet(
+              playerNumber === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
+              innerHeight / 2,
+              5,
+              velocity,
+              ctx!
+            )
           );
+
         } else {
           bulletsArray.push(
-            new Bullet(innerWidth / 2 - 50, innerHeight / 2, 5, velocity, ctx!)
+            new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx!)
           );
         }
-      } else {
-        bulletsArray.push(
-          new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx!)
-        );
       }
     }
-    window.addEventListener("click", (event) => bulletEventListener(event))
+
+    window.addEventListener("click", bulletEventListener)
     return () => window.removeEventListener("click", bulletEventListener)
-  }, [ctx, bulletsArray, wsRef.current, playerNumber, playerId, roomId])
+
+  }, [ctx, bulletsArray, playerNumber, playerId, roomId])
 
 
 
   function updateGameColors() {
     const isDark = document.documentElement.classList.contains("dark");
     playersArray[0].color = isDark ? "#ffffff" : "#000000";
-    if (multiplayer) playersArray[1].color = isDark ? "#ffffff" : "#000000";
+    if (multiPlayerRef.current) playersArray[1].color = isDark ? "#ffffff" : "#000000";
   }
   function init() {
     setScore(0)
-    if (wonElement.current) wonElement.current.style.display = "none";
-    if (lostElement.current) lostElement.current.style.display = "none";
+    setGameLost(false)
+    setGameWon(false)
     if (spawnEnemyIntervalId) spawnEnemyIntervalId();
   }
   function endGame() {
@@ -157,11 +143,10 @@ function App() {
     setPlayersArray([])
     cancelAnimationFrame(animationId);
     if (gameModal.current) gameModal.current.style.display = "flex";
-    if (endScore.current) endScore.current.innerHTML = String(score);
   }
   // invoking player class
   function createPlayer() {
-    if (multiplayer) {
+    if (multiPlayerRef.current) {
       // Ensure the players array has space for two players
       if (!playersArray[0]) {
         playersArray[0] = new Player(
@@ -222,7 +207,7 @@ function App() {
       }
     });
     playersArray[0].draw();
-    if (multiplayer) playersArray[1].draw();
+    if (multiPlayerRef.current) playersArray[1].draw();
     for (let eIndex = enemiesArray.length - 1; eIndex >= 0; eIndex--) {
       const enemy = enemiesArray[eIndex];
       enemy.update();
@@ -271,7 +256,7 @@ function App() {
         }
       }
       // End game if enemy hits player
-      if (multiplayer) {
+      if (multiPlayerRef.current) {
         const distFromPlayer1 = Math.hypot(
           playersArray[0].x - enemy.x,
           playersArray[0].y - enemy.y
@@ -283,9 +268,9 @@ function App() {
         if (distFromPlayer1 - enemy.radius - playersArray[0].radius < 1) {
           endGame();
           if (playerNumber === 1) {
-            lostElement.current!.style.display = "block";
+            setGameLost(true)
           } else {
-            wonElement.current!.style.display = "block";
+            setGameWon(true)
           }
           if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             wsRef.current.send(
@@ -301,9 +286,9 @@ function App() {
         if (distFromPlayer2 - enemy.radius - playersArray[1].radius < 1) {
           endGame();
           if (playerNumber === 2) {
-            lostElement.current!.style.display = "block";
+            setGameLost(true)
           } else {
-            wonElement.current!.style.display = "block";
+            setGameWon(true)
           }
         }
       } else {
@@ -328,7 +313,7 @@ function App() {
     }
   }
   const singlePlayerHandler = () => {
-    multiplayer = false
+    multiPlayerRef.current = false
     createPlayer();
     updateGameColors();
     setCanvasSize(canvas.current!, ctx!);
@@ -345,10 +330,10 @@ function App() {
       wsRef.current = null
     }
     setMultiplayerLoading(multiPlayerLoadingInterface.Server)
-    multiplayer = true
+    multiPlayerRef.current = true
     setCanvasSize(canvas.current!, ctx!);
-    wonElement.current!.style.display = "none";
-    lostElement.current!.style.display = "none";
+    setGameLost(false)
+    setGameWon(false)
     wsRef.current = new WebSocket(import.meta.env.VITE_SOCKET_URL!)
     wsRef.current.onopen = () => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -437,8 +422,8 @@ function App() {
           <Settings className="ml-auto cursor-pointer" onClick={() => navigate('/settings')} />
           <h1 className="text-7xl leading-none font-bold" id="endScore">{score}</h1>
           <p className="mb-4 text-sm text-gray-800 dark:text-gray-300">Points</p>
-          <p className="text-red-500 text-xl hidden" ref={lostElement} id="lostElement">YOU LOST</p>
-          <p className="text-green-500 text-xl hidden" ref={wonElement} id="wonElement">YOU WON</p>
+          <p className={`${gameLost ? "block" : "hidden"}  text-red-500 text-xl `} id="lostElement">YOU LOST</p>
+          <p className={`${gameWon ? "block" : "hidden"} text-green-500 text-xl `} id="wonElement">YOU WON</p>
           <div>
             <button
               className="w-full rounded-full cursor-pointer bg-green-500/50 dark:bg-black/50 p-3"
