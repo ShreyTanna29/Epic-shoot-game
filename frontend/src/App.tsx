@@ -25,15 +25,15 @@ function App() {
   const [score, setScore] = useState(0)
   const [roomId, setRoomId] = useState(0)
   const [playerId, setPlayerId] = useState(0)
-  const [playerNumber, setPlayerNumber] = useState(0)
-  const [gameWon, setGameWon] = useState<boolean>(false) // for multiplayer
-  const [gameLost, setGameLost] = useState<boolean>(false) // for multiplayer
+  const [gameWon, setGameWon] = useState<boolean>() // for multiplayer
+  const [gameLost, setGameLost] = useState<boolean>() // for multiplayer
 
   // refs
   const wsRef = useRef<WebSocket | null>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const gameModal = useRef<HTMLDivElement>(null)
   const multiPlayerRef = useRef<boolean>()
+  const playerNumberRef = useRef<number>()
 
   let spawnEnemyIntervalId: () => void;
 
@@ -92,7 +92,7 @@ function App() {
               data: {
                 playerId,
                 roomId,
-                x: playerNumber === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
+                x: playerNumberRef.current === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
                 y: innerHeight / 2,
                 radius: 5,
                 velocity
@@ -102,7 +102,7 @@ function App() {
 
           bulletsArray.push(
             new Bullet(
-              playerNumber === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
+              playerNumberRef.current === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
               innerHeight / 2,
               5,
               velocity,
@@ -121,7 +121,7 @@ function App() {
     window.addEventListener("click", bulletEventListener)
     return () => window.removeEventListener("click", bulletEventListener)
 
-  }, [ctx, bulletsArray, playerNumber, playerId, roomId])
+  }, [ctx, bulletsArray, playerId, roomId])
 
 
 
@@ -132,8 +132,8 @@ function App() {
   }
   function init() {
     setScore(0)
-    setGameLost(false)
-    setGameWon(false)
+    console.log("won:", gameWon, "lost: ", gameLost, "number: ", playerNumberRef.current);
+
     if (spawnEnemyIntervalId) spawnEnemyIntervalId();
   }
   function endGame() {
@@ -141,6 +141,7 @@ function App() {
     setEnemiesArray([]);
     setParticlesArray([]);
     setPlayersArray([])
+    console.log("won:", gameWon, "lost: ", gameLost, "number: ", playerNumberRef.current);
     cancelAnimationFrame(animationId);
     if (gameModal.current) gameModal.current.style.display = "flex";
   }
@@ -267,7 +268,7 @@ function App() {
         );
         if (distFromPlayer1 - enemy.radius - playersArray[0].radius < 1) {
           endGame();
-          if (playerNumber === 1) {
+          if (playerNumberRef.current === 1) {
             setGameLost(true)
           } else {
             setGameWon(true)
@@ -285,7 +286,7 @@ function App() {
         }
         if (distFromPlayer2 - enemy.radius - playersArray[1].radius < 1) {
           endGame();
-          if (playerNumber === 2) {
+          if (playerNumberRef.current === 2) {
             setGameLost(true)
           } else {
             setGameWon(true)
@@ -371,7 +372,7 @@ function App() {
           const data = message.data;
           setPlayerId(data.player.id)
           setRoomId(data.player.roomId)
-          setPlayerNumber(data.player.number)
+          playerNumberRef.current = data.player.number
           createPlayer();
           updateGameColors();
           init();
