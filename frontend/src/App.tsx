@@ -84,7 +84,7 @@ function App() {
         x: Math.cos(angle) * 6,
         y: Math.sin(angle) * 6,
       };
-      if (multiPlayerRef.current) {
+      if (multiPlayerRef.current === true) {
         if (wsRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
           wsRef.current.send(
             JSON.stringify({
@@ -100,28 +100,22 @@ function App() {
             })
           )
 
-          bulletsArray.push(
-            new Bullet(
-              playerNumberRef.current === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50,
-              innerHeight / 2,
-              5,
-              velocity,
-              ctx!
-            )
-          );
-
-        } else {
-          bulletsArray.push(
-            new Bullet(innerWidth / 2, innerHeight / 2, 5, velocity, ctx!)
-          );
         }
       }
+      const bulletX = multiPlayerRef.current
+        ? (playerNumberRef.current === 1 ? innerWidth / 2 + 50 : innerWidth / 2 - 50)
+        : innerWidth / 2;
+
+      const newBullet = new Bullet(bulletX, innerHeight / 2, 5, velocity, ctx);
+
+      bulletsArray.push(newBullet)
+      console.log(bulletsArray);
     }
 
     window.addEventListener("click", bulletEventListener)
     return () => window.removeEventListener("click", bulletEventListener)
 
-  }, [ctx, bulletsArray, playerId, roomId])
+  }, [ctx, playerId, bulletsArray, playersArray, roomId])
 
 
 
