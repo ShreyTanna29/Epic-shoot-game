@@ -149,14 +149,19 @@ export default function Settings() {
           <h2 className="text-3xl font-bold">Avatars</h2>
           <div className="flex items-center gap-4 justify-center mt-4 max-w-full md:max-w-[50%] flex-wrap mx-auto">
             {avatars.map((a) => (
-              <img
-                src={a}
-                key={a}
-                width={40}
-                height={40}
-                className={`cursor-pointer  ${avatar === a ? "border" : null}`}
-                onClick={() => changeAvatar(a)}
-              />
+              <picture>
+                <img
+                  src={a}
+                  key={a}
+                  width={40}
+                  height={40}
+                  loading="lazy"
+                  className={`cursor-pointer  ${
+                    avatar === a ? "border" : null
+                  }`}
+                  onClick={() => changeAvatar(a)}
+                />
+              </picture>
             ))}
           </div>
         </div>

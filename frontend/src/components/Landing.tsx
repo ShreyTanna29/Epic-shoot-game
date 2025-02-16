@@ -32,7 +32,6 @@ export default function Landing() {
       duration: 1,
       y: 0,
     });
-
     gsap.to(".gameMode", {
       opacity: 1,
       y: 0,
@@ -75,7 +74,11 @@ export default function Landing() {
           </div>
 
           <div className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] text-white ">
-            <h1 className="text-4xl text-white font-extrabold opacity-0 opacityAnimation5">
+            <h1
+              className={` ${
+                showGameMode ? "hidden lg:block " : "block"
+              } text-4xl text-white font-extrabold opacity-0 opacityAnimation5`}
+            >
               A Neon Battlefield Where Only the Fastest Survive!
             </h1>
             <div className="flex justify-center">
