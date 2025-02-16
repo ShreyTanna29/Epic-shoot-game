@@ -17,6 +17,7 @@ export class GameService {
       playerDetails.name,
       playerDetails.canvasWidth,
       playerDetails.canvasHeight,
+      playerDetails.avatar,
     );
     this.clientsArray.push(client);
     const waitingPlayersList = this.instance.getWaitingList();
@@ -39,7 +40,7 @@ export class GameService {
         JSON.stringify({
           event: 'start',
           data: {
-            opponent: { name: player2.name },
+            opponent: { name: player2.name, avatar: player2.avatar },
             player: {
               name: player1.name,
               id: player1.id,
@@ -54,7 +55,7 @@ export class GameService {
         JSON.stringify({
           event: 'start',
           data: {
-            opponent: { name: player1.name },
+            opponent: { name: player1.name, avatar: player1.avatar },
             player: {
               name: player2.name,
               id: player2.id,

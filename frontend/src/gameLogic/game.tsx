@@ -36,6 +36,7 @@ function Game({
   const gameModal = useRef<HTMLDivElement>(null);
   const multiPlayerRef = useRef<boolean>();
   const playerNumberRef = useRef<number>();
+  const opponentAvatarRef = useRef<string>();
 
   let spawnEnemyIntervalId: () => void;
   useEffect(() => {
@@ -169,7 +170,9 @@ function Game({
           innerWidth > 700 ? 30 : 20,
           "white",
           ctx!,
-          localStorage.avatar || a1
+          playerNumberRef.current === 1
+            ? localStorage.avatar
+            : opponentAvatarRef.current
         );
       }
       if (!playersArray[1]) {
@@ -179,7 +182,9 @@ function Game({
           innerWidth > 700 ? 30 : 20,
           "white",
           ctx!,
-          localStorage.avatar || a1
+          playerNumberRef.current === 2
+            ? localStorage.avatar
+            : opponentAvatarRef.current
         );
       }
     } else {
@@ -361,6 +366,7 @@ function Game({
               name: "abv",
               canvasWidth: innerWidth,
               canvasHeight: innerHeight,
+              avatar: localStorage.avatar,
             },
           })
         );
@@ -389,6 +395,7 @@ function Game({
           setPlayerId(data.player.id);
           setRoomId(data.player.roomId);
           playerNumberRef.current = data.player.number;
+          opponentAvatarRef.current = data.opponent.avatar;
           createPlayer();
           updateGameColors();
           init();

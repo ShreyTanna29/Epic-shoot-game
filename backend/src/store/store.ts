@@ -22,12 +22,18 @@ export class Store {
     return Store.store;
   }
 
-  addPlayer(name: string, canvasWidth: number, canvasHeight: number) {
+  addPlayer(
+    name: string,
+    canvasWidth: number,
+    canvasHeight: number,
+    avatar: string,
+  ) {
     this.waitingPlayers.push({
       id: Math.random(),
       name,
       canvasWidth,
       canvasHeight,
+      avatar,
     });
   }
 
