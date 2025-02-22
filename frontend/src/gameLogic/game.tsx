@@ -95,11 +95,6 @@ function Game({
               data: {
                 playerId,
                 roomId,
-                x:
-                  playerNumberRef.current === 1
-                    ? innerWidth / 2 + 50
-                    : innerWidth / 2 - 50,
-                y: innerHeight / 2,
                 radius: 5,
                 velocity,
               },
@@ -416,8 +411,17 @@ function Game({
         }
         case "fireBullet": {
           const data = message.data.bullet;
+
           bulletsArray.push(
-            new Bullet(data.x, data.y, data.radius, data.velocity, ctx!)
+            new Bullet(
+              playerNumberRef.current === 1
+                ? innerWidth / 2 - 50
+                : innerWidth / 2 + 50,
+              innerHeight / 2,
+              data.radius,
+              data.velocity,
+              ctx!
+            )
           );
           break;
         }

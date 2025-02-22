@@ -12,7 +12,7 @@ export class Store {
   private enemies: Enemy[] = [];
   static store: Store;
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance() {
     if (!Store.store) {
@@ -102,8 +102,6 @@ export class Store {
           event: 'fireBullet',
           data: {
             bullet: {
-              x: bulletDetails.x,
-              y: bulletDetails.y,
               radius: bulletDetails.radius,
               velocity: bulletDetails.velocity,
             },
@@ -116,8 +114,6 @@ export class Store {
           event: 'fireBullet',
           data: {
             bullet: {
-              x: bulletDetails.x,
-              y: bulletDetails.y,
               radius: bulletDetails.radius,
               velocity: bulletDetails.velocity,
             },

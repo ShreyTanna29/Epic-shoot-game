@@ -8,12 +8,6 @@ export class FireBulletDto {
   playerId: number;
 
   @IsNumber()
-  x: number;
-
-  @IsNumber()
-  y: number;
-
-  @IsNumber()
   radius: number;
 
   @IsObject()
