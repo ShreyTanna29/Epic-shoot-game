@@ -1,10 +1,10 @@
-import gameImg from "../assets/game.webp";
-import logo from "../assets/logo.png";
 import { useEffect, useState } from "react";
 import gsap from "gsap";
 import Game from "../gameLogic/game";
 import { Settings } from "lucide-react";
 import { Link } from "react-router-dom";
+import { auto, scale } from "@cloudinary/url-gen/actions/resize";
+import { cld } from "../utils/cloudinary";
 
 export default function Landing() {
   const [showGameMode, setShowGameMode] = useState(false);
@@ -40,6 +40,21 @@ export default function Landing() {
     });
   }, [showGameMode]);
 
+  const bgimg = cld
+    .image("landing-bg")
+    .format("auto")
+    .quality("auto")
+    .resize(auto());
+
+  const gameImg = bgimg.toURL();
+
+  const logoimg = cld
+    .image("logo")
+    .format("auto")
+    .quality("auto")
+    .resize(scale().width(50));
+
+  const logo = logoimg.toURL();
   return (
     <>
       {!playingGame && (

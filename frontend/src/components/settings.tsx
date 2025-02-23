@@ -1,26 +1,12 @@
 import { ArrowLeft, Monitor, Moon, Sun } from "lucide-react";
-import {
-  a1,
-  a2,
-  a3,
-  a5,
-  a6,
-  a7,
-  a8,
-  a9,
-  a10,
-  a11,
-  a12,
-  a13,
-  a14,
-  a15,
-} from "../assets/avatars/index";
+import { images } from "../assets/avatars/index";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
   const currentTheme = localStorage.theme ? localStorage.theme : "system";
   const [theme, setTheme] = useState<"light" | "dark" | "system">(currentTheme);
+  const a1 = images[0];
   const currentAvatar = localStorage.avatar || a1;
   const [avatar, setAvatar] = useState<string>(currentAvatar);
 
@@ -85,22 +71,7 @@ export default function Settings() {
       }
     }
   };
-  const avatars = [
-    a1,
-    a2,
-    a3,
-    a5,
-    a6,
-    a7,
-    a8,
-    a9,
-    a10,
-    a11,
-    a12,
-    a13,
-    a14,
-    a15,
-  ];
+  const avatars = images;
 
   const changeAvatar = (newAvatar: string) => {
     setAvatar(newAvatar);

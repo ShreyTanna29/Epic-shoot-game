@@ -1,17 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-// import Game from "./gameLogic/game";
 import Settings from "./components/settings";
 import Landing from "./components/Landing";
-import { useEffect } from "react";
-import { avatars } from "./assets/avatars/index";
 
 function App() {
-  useEffect(() => {
-    avatars.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, []);
   return (
     <BrowserRouter>
       <Routes>

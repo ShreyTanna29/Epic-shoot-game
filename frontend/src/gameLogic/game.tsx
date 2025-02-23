@@ -3,7 +3,7 @@ import { setCanvasSize } from "../utils/canvasSize";
 import spawnEnemies from "./spawnEnemies";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { a1 } from "../assets/avatars";
+import { images } from "../assets/avatars";
 import { Home, RotateCcw } from "lucide-react";
 
 function Game({
@@ -15,6 +15,8 @@ function Game({
     Server = "connecting to server",
     Player = "connecting to player",
   }
+
+  const a1 = images[0];
 
   //states
   const [bulletsArray, setBulletsArray] = useState<Bullet[]>([]);
