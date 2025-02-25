@@ -12,6 +12,8 @@ export default function Landing() {
     "singlePlayer" | "multiPlayer" | null
   >(null);
   const [playingGame, setPlayingGame] = useState(false);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [playerName, setPlayerName] = useState<string>("");
   useEffect(() => {
     gsap.to(".slideRight", {
       opacity: 1,
@@ -55,6 +57,11 @@ export default function Landing() {
     .resize(scale().width(50));
 
   const logo = logoimg.toURL();
+
+  const handleMultiplayerMode = () => {
+    setPlayingGame(true);
+    setGameMode("multiPlayer");
+  };
   return (
     <>
       {!playingGame && (
@@ -106,7 +113,7 @@ export default function Landing() {
                 </button>
               )}
 
-              {showGameMode && (
+              {showGameMode && !showNameModal && (
                 <div className="mt-4 flex flex-wrap gap-10">
                   <button
                     onClick={() => {
@@ -120,7 +127,7 @@ export default function Landing() {
 
                   <button
                     onClick={() => {
-                      setPlayingGame(true);
+                      setShowNameModal(true);
                       setGameMode("multiPlayer");
                     }}
                     className="bg-white/10 p-10 rounded-lg cursor-pointer opacity-0 translate-y-10 gameMode"
@@ -129,12 +136,41 @@ export default function Landing() {
                   </button>
                 </div>
               )}
+
+              {showNameModal && (
+                <div className="p-12 bg-white/10 text-white rounded-lg flex-col">
+                  <p>Enter your name</p>
+                  <input
+                    autoFocus
+                    className="rounded-md px-4 py-2 mt-4 bg-white border-black/10 text-black"
+                    type="text"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    onKeyDown={(key) => {
+                      if (key.key === "Enter") {
+                        handleMultiplayerMode();
+                      }
+                    }}
+                  />
+                  <div>
+                    <button
+                      disabled={
+                        playerName.trim() === "" || playerName.length > 20
+                      }
+                      onClick={() => handleMultiplayerMode()}
+                      className="mt-4 bg-black w-full disabled:opacity-30 rounded-lg text-center cursor-pointer p-2"
+                    >
+                      Lets GO!
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {playingGame && <Game gameMode={gameMode} />}
+      {playingGame && <Game playerName={playerName} gameMode={gameMode} />}
     </>
   );
 }

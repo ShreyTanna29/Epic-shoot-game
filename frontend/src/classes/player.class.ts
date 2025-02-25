@@ -48,7 +48,6 @@ export class Player {
       this.radius * 2,
       this.radius * 2
     );
-
     this.ctx.restore();
   }
 }

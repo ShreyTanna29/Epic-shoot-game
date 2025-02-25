@@ -4,19 +4,22 @@ export class Bullet {
   public y: number;
   public radius: number;
   public velocity: { x: number; y: number };
+  public opponentBullet?: boolean;
 
   constructor(
     x: number,
     y: number,
     radius: number,
     velocity: { x: number; y: number },
-    ctx: CanvasRenderingContext2D
+    ctx: CanvasRenderingContext2D,
+    opponentBullet?: boolean
   ) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.velocity = velocity;
+    this.opponentBullet = opponentBullet;
   }
 
   draw() {

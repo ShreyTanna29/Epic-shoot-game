@@ -8,8 +8,10 @@ import { Home, RotateCcw } from "lucide-react";
 
 function Game({
   gameMode,
+  playerName,
 }: {
   gameMode: "singlePlayer" | "multiPlayer" | null;
+  playerName: string;
 }) {
   enum multiPlayerLoadingInterface {
     Server = "connecting to server",
@@ -31,6 +33,8 @@ function Game({
   const [playerId, setPlayerId] = useState(0);
   const [gameWon, setGameWon] = useState<boolean>(); // for multiplayer
   const [gameLost, setGameLost] = useState<boolean>(); // for multiplayer
+  const [opponentName, setOppnentName] = useState<string>("no");
+  const [opponentScore, setOpponentScore] = useState(0);
 
   // refs
   const wsRef = useRef<WebSocket | null>(null);
@@ -128,6 +132,7 @@ function Game({
   }
   function init() {
     setScore(0);
+    setOpponentScore(0);
     console.log(
       "won:",
       gameWon,
@@ -213,6 +218,7 @@ function Game({
     const isDark = document.documentElement.classList.contains("dark");
     ctx!.fillStyle = isDark ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)";
     ctx!.fillRect(0, 0, canvas.current!.width, canvas.current!.height);
+    ctx.fillStyle = "white";
 
     bulletsArray.forEach((eachBullet) => eachBullet.update());
     particlesArray.forEach((particle, index) => {
@@ -242,7 +248,11 @@ function Game({
         }
         // Remove enemies and bullets on collision
         if (dist - enemy.radius - bullet.radius < 1) {
-          setScore((prev) => prev + 5);
+          if (bullet.opponentBullet) {
+            setOpponentScore((prev) => prev + 5);
+          } else {
+            setScore((prev) => prev + 5);
+          }
 
           // Create particles/explosions on hit
           for (
@@ -360,7 +370,7 @@ function Game({
           JSON.stringify({
             event: "init",
             data: {
-              name: "abv",
+              name: playerName,
               canvasWidth: innerWidth,
               canvasHeight: innerHeight,
               avatar: localStorage.avatar,
@@ -385,6 +395,7 @@ function Game({
     };
     wsRef.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
+
       switch (message.event) {
         case "start": {
           setMultiplayerLoading(null);
@@ -393,6 +404,7 @@ function Game({
           setRoomId(data.player.roomId);
           playerNumberRef.current = data.player.number;
           opponentAvatarRef.current = data.opponent.avatar;
+          setOppnentName(data.opponent.name);
           createPlayer();
           updateGameColors();
           init();
@@ -422,7 +434,8 @@ function Game({
               innerHeight / 2,
               data.radius,
               data.velocity,
-              ctx!
+              ctx!,
+              true
             )
           );
           break;
@@ -457,12 +470,58 @@ function Game({
   return (
     <>
       <div className="fixed text-black dark:text-white w-full flex items-center justify-between text-sm select-none pt-2 px-4">
-        <div className="flex items-center">
-          <span>Score: </span>
-          <span id="scoreElement" className="ml-1">
-            {score}
-          </span>
+        <div
+          className={`flex-col items-center ${
+            multiPlayerRef.current && playerNumberRef.current === 2
+              ? "text-amber-500"
+              : null
+          } `}
+        >
+          <div>
+            {multiPlayerRef.current
+              ? playerNumberRef.current === 1
+                ? playerName
+                : opponentName
+              : null}
+          </div>
+          <div className="flex items-center">
+            <span>Score: </span>
+            <span id="scoreElement" className="ml-1">
+              {multiPlayerRef.current
+                ? playerNumberRef.current === 2
+                  ? score
+                  : opponentScore
+                : score}
+            </span>
+          </div>
         </div>
+        {multiPlayerRef.current && (
+          <div
+            className={`flex-col items-center ${
+              multiPlayerRef.current && playerNumberRef.current === 1
+                ? "text-amber-500"
+                : null
+            } `}
+          >
+            <div>
+              {multiPlayerRef.current
+                ? playerNumberRef.current === 2
+                  ? playerName
+                  : opponentName
+                : null}
+            </div>
+            <div className="flex items-center">
+              <span>Score: </span>
+              <span id="scoreElement" className="ml-1">
+                {multiPlayerRef.current
+                  ? playerNumberRef.current === 1
+                    ? score
+                    : opponentScore
+                  : score}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
       {/* <!-- score modal --> */}
       <div
