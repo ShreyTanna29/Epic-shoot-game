@@ -140,10 +140,11 @@ export default function Landing() {
           {/* Audio element */}
           <audio
             ref={audioRef}
-            src="/background-music.mp3"
+            src="/bg.mp3"
             loop
             autoPlay
             muted={muted}
+            preload="auto"
           />
 
           {/* Animated particles background */}
