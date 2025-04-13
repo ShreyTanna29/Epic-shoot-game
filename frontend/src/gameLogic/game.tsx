@@ -43,6 +43,7 @@ function Game({
   const multiPlayerRef = useRef<boolean>();
   const playerNumberRef = useRef<number>();
   const opponentAvatarRef = useRef<string>();
+  const zapSoundRef = useRef<HTMLAudioElement>(null);
 
   let spawnEnemyIntervalId: () => void;
   useEffect(() => {
@@ -117,6 +118,7 @@ function Game({
       const newBullet = new Bullet(bulletX, innerHeight / 2, 5, velocity, ctx);
 
       bulletsArray.push(newBullet);
+      playZapSound();
       console.log(bulletsArray);
     };
 
@@ -425,7 +427,6 @@ function Game({
         }
         case "fireBullet": {
           const data = message.data.bullet;
-
           bulletsArray.push(
             new Bullet(
               playerNumberRef.current === 1
@@ -438,6 +439,8 @@ function Game({
               true
             )
           );
+          playZapSound();
+
           break;
         }
       }
@@ -467,6 +470,16 @@ function Game({
       }
     };
   }, [ctx, gameMode]);
+
+  const playZapSound = () => {
+    if (zapSoundRef.current) {
+      zapSoundRef.current.currentTime = 0;
+      zapSoundRef.current.volume = 0.3;
+      zapSoundRef.current
+        .play()
+        .catch((err) => console.error("Zap sound play failed:", err));
+    }
+  };
   return (
     <>
       <div className="fixed text-black dark:text-white w-full flex items-center justify-between text-sm select-none pt-2 px-4">
@@ -594,6 +607,7 @@ function Game({
           </div>
         </div>
       </div>
+      <audio ref={zapSoundRef} src="/zap.wav" preload="auto" />
       <canvas ref={canvas} id="canvas"></canvas>
     </>
   );

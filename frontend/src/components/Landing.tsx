@@ -24,6 +24,7 @@ export default function Landing() {
   const [playerName, setPlayerName] = useState<string>("");
   const [muted, setMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const clickSoundRef = useRef<HTMLAudioElement>(null);
   const particlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -133,6 +134,15 @@ export default function Landing() {
     setGameMode("multiPlayer");
   };
 
+  const playClickSound = () => {
+    if (clickSoundRef.current && !muted) {
+      clickSoundRef.current.currentTime = 0; // reset to beggining
+      clickSoundRef.current
+        .play()
+        .catch((err) => console.error("Click sound play error", err));
+    }
+  };
+
   return (
     <>
       {!playingGame && (
@@ -140,12 +150,14 @@ export default function Landing() {
           {/* Audio element */}
           <audio
             ref={audioRef}
-            src="/bg.mp3"
+            src="/123.mp3"
             loop
             autoPlay
             muted={muted}
             preload="auto"
           />
+
+          <audio ref={clickSoundRef} src="/hover.wav" preload="auto" />
 
           {/* Animated particles background */}
           <div ref={particlesRef} className="absolute inset-0 z-10"></div>
@@ -213,7 +225,10 @@ export default function Landing() {
                   A Neon Battlefield Where Only the Fastest Survive!
                 </p>
                 <button
-                  onClick={() => setShowGameMode(true)}
+                  onClick={() => {
+                    playClickSound();
+                    setShowGameMode(true);
+                  }}
                   className="cta-button opacity-0 translate-y-10 bg-gradient-to-r py-2 sm:py-3 px-6 sm:px-10 rounded-full text-base sm:text-lg font-bold tracking-wider cursor-pointer bg-black transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <span className="flex items-center gap-2">
@@ -231,6 +246,7 @@ export default function Landing() {
                   <div className="grid grid-cols-1 gap-4 sm:gap-6">
                     <button
                       onClick={() => {
+                        playClickSound();
                         setPlayingGame(true);
                         setGameMode("singlePlayer");
                       }}
@@ -253,6 +269,7 @@ export default function Landing() {
 
                     <button
                       onClick={() => {
+                        playClickSound();
                         setShowNameModal(true);
                         setGameMode("multiPlayer");
                       }}
@@ -298,7 +315,10 @@ export default function Landing() {
                     />
                     <div className="mt-4 sm:mt-6 flex gap-3 sm:gap-4">
                       <button
-                        onClick={() => setShowNameModal(false)}
+                        onClick={() => {
+                          playClickSound();
+                          setShowNameModal(false);
+                        }}
                         className="flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-lg border border-gray-500 text-gray-300 hover:bg-gray-800 transition-colors duration-300 text-sm sm:text-base"
                       >
                         Back
@@ -307,7 +327,10 @@ export default function Landing() {
                         disabled={
                           playerName.trim() === "" || playerName.length > 20
                         }
-                        onClick={() => handleMultiplayerMode()}
+                        onClick={() => {
+                          playClickSound();
+                          handleMultiplayerMode();
+                        }}
                         className="flex-1 py-2 sm:py-3 px-3 sm:px-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-pink-700 transition-all duration-300 text-sm sm:text-base"
                       >
                         ENTER BATTLE
