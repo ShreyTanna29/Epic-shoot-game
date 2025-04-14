@@ -87,7 +87,7 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    if (showGameMode) {
+    if (showGameMode && !showNameModal) {
       gsap.fromTo(
         ".game-mode-container",
         { opacity: 0, y: 50 },
@@ -102,9 +102,9 @@ export default function Landing() {
         ease: "back.out(1.7)",
       });
     }
-  }, [showGameMode]);
+  }, [showGameMode, showNameModal]);
 
-  // Background image
+  // Background images
   const bgimg = cld
     .image("landing-bg")
     .format("auto")
