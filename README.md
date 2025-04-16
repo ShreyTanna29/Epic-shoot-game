@@ -1,6 +1,6 @@
 ## EPIC SHOOT LIKE NO OTHER.
+![Screenshot from 2025-04-16 23-37-04](https://github.com/user-attachments/assets/30d464a4-0577-4e08-8b45-42283e42a652)
 
-[Screencast from 2024-12-20 11-40-52.webm](https://github.com/user-attachments/assets/ab0eb060-8f96-4bab-9f04-7922c063232d)
 
 ## NOTE
 Project is under development, many features are yet to come, this is just a MVP.
@@ -17,7 +17,7 @@ Project is under development, many features are yet to come, this is just a MVP.
 
 # Built with
 
-Find out yourself, if you are a real develpoer.
+Find out yourself, if you are a real developer.
 <br>
 <br>
 
