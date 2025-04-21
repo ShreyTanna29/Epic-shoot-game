@@ -1,12 +1,15 @@
-import { scale } from '@cloudinary/url-gen/actions/resize';
-import { cld } from '../../utils/cloudinary';
+import { scale } from "@cloudinary/url-gen/actions/resize";
+import { cld } from "../../utils/cloudinary";
 
-const images: string[] = []
+const images: string[] = [];
 
 for (let i = 1; i <= 15; i++) {
-  const img = cld.image(`a${i}`).format('auto').quality('auto').resize(scale().width(40))
-  images.push(img.toURL())
+  const img = cld
+    .image(`a${i}`)
+    .format("auto")
+    .quality("auto")
+    .resize(scale().width(60));
+  images.push(img.toURL());
 }
 
-
-export { images }
+export { images };
