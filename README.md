@@ -7,12 +7,12 @@ Project is under development, many features are yet to come, this is just a MVP.
 
 # What our players say about the game
 
-- "I haven't played this much fun game from centuries" - Steve Jobs, 29 FEB, 1985.
-- "So much fun and relaxsation, wish I could kiss the hands of developer" - Bill Gates, just after steve jobs said above line.
-- "Wish I could hire developer of this game but I can't afford him." - Elon Musk, after failure of falcon 3.
-- "It's so fun to play this game, wish developers at Apple could create something like this, but they aren't skilled enough" - Tim Cook, I don't remember when he said this.
-- "Finally, a game worth breaking the time-space continuum for." - Albert Einstein, probably before inventing time travel.
-- "If this is what the future holds, I’m glad I made electricity." - Nikola Tesla, after unlocking the plasma cannon.
+- "I haven't played this much fun game from centuries" - **Steve Jobs, 29 FEB, 1985.**
+- "So much fun and relaxsation, wish I could kiss the hands of developer" - **Bill Gates, just after steve jobs said above line.**
+- "Wish I could hire developer of this game but I can't afford him." - **Elon Musk, after failure of falcon 3.**
+- "It's so fun to play this game, wish developers at Apple could create something like this, but they aren't skilled enough" - **Tim Cook, I don't remember when he said this.**
+- "Finally, a game worth breaking the time-space continuum for." - **Albert Einstein, probably before inventing time travel.**
+- "If this is what the future holds, I’m glad I made electricity." - **Nikola Tesla, after unlocking the plasma cannon.**
 
 
 # Built with
